@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeneNotes</title>
+    <meta name="description" content="">
+
+    <!-- SOCIAL -->
+    <meta property="og:title" content="ZeneNotes: Hire This Growth Engineer!" />
+    <meta property="og:site_name" content="ZeneNotes"/>
+    <meta property="og:description" content="Ken Hanson has been looking for a job like this for a very long time. He's driven by data, engineering challenges that will impact revenue and growth levers, and deeply enjoys crushing growth metrics and helping do the impossible that will take companies to their next growth curve." />
+    <meta property="og:image" content="HOSTED_IMAGE_HERE" />
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@ZeneNotes">
+    <meta name="twitter:title" content="ZeneNotes: Hire This Growth Engineer!">
+    <meta name="twitter:description" content="Ken Hanson has been looking for a job like this for a very long time. He's driven by data, engineering challenges that will impact revenue and growth levers, and deeply enjoys crushing growth metrics and helping do the impossible that will take companies to their next growth curve.">
+    <meta name="twitter:image" content="HOSTED_IMAGE_HERE">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="scripts.js"></script>
+
+  </head>
+  <body>
+
+    <div id="contentWrapper">
+      <div id="brandBanner">ZeneNotes</div>
+
+      <div id="notePromptWrapper" class="closed">
+        <div id="closedNotePrompt">
+          <p>Take a note...</p>
+          <a href="#" id="listButton">List</a>
+          <a href="#" id="noteButton">Note</a>
+        </div><!-- END closedNotePrompt -->
+
+        <div id="noteInput">
+          <input type="text" placeholder="Title" id="noteTitle" class="titleInput" />
+          <textarea placeholder="Take a note..." id="noteBody"></textarea>
+          <a href="#" id="saveNote" class="saveButton">Save Note</a>
+        </div><!-- END noteInput -->
+
+        <div id="listInput">
+          <input type="text" placeholder="Title" id="listTitle" class="titleInput"/>
+          <ul>
+            <li><input type="text" placeholder="List Item" /> <a href="#" class="deleteListItem">X</a></li>
+          </ul>
+          <a href="#" id="saveList" class="saveButton">Save Note</a>
+        </div><!-- END listInput -->
+      </div><!-- END notePromptWrapper -->
+
+      <div id="notesWrapper">
+        <!-- Sample content for CSS work -->
+        <div class="note">
+          <h2>Title Here</h2>
+          <div class="noteContents">
+            Content Here, formatted like the textarea contained.
+          </div>
+        </div><!-- END note -->
+
+        <div class="list">
+          <h2>Title Here</h2>
+          <div class="listContainer">
+            <ul>
+              <li>List Item</li>
+              <li>List Item</li>
+              <li>List Item</li>
+            </ul>
+          </div><!-- END listContainer -->
+        </div><!-- END list -->
+
+        <div class="note">
+          <div class="noteContents">
+            There's no title in this list.
+          </div>
+        </div><!-- END note -->
+
+      </div><!-- END notesWrapper -->
+    </div><!-- END contentWrapper -->
+
+    <div id="templateContainer" class="invisible">
+      <div class="note">
+        <h2>Title Here</h2>
+        <div class="noteContents">
+          Content Here, formatted like the textarea contained.
+        </div>
+      </div><!-- END note -->
+
+      <div class="list">
+        <h2>Title Here</h2>
+        <div class="listContainer">
+          <ul>
+            <li>List Item</li>
+            <li>List Item</li>
+            <li>List Item</li>
+          </ul>
+        </div><!-- END listContainer -->
+      </div><!-- END list -->
+
+    </div><!-- END templateContainer -->
+
+  </body>
+</html>

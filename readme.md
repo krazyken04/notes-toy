@@ -20,6 +20,9 @@ Please submit here: http://app.greenhouse.io/tests/2f6bbcb57bc46cd34a5304ccf6ada
 
 # Notes about my efforts
 This entire document was written before beginning work. I will use a github repo if you'd be interested in the changes over time.
+I'm big on light and fast as often as possible. I can typically go faster by skipping NPM / RequireJS and SASS types of frameworks.
+I'm also familiar with Flexbox and other newer techniques to do complicated tasks in CSS and HTML, but because the design of this is going to be fairly simple, will be getting away with using older positioning and layout techniques.
+I'm very familiar with them, but for the sake of this prototype, I will not be using them.
 
 ## 4 Hour Goal
 Meet expectations with a touch more pizazz than I think Zenefits would expect.
