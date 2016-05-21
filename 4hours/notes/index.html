@@ -19,6 +19,9 @@
     <meta name="twitter:description" content="Ken Hanson has been looking for a job like this for a very long time. He's driven by data, engineering challenges that will impact revenue and growth levers, and deeply enjoys crushing growth metrics and helping do the impossible that will take companies to their next growth curve.">
     <meta name="twitter:image" content="HOSTED_IMAGE_HERE">
 
+    <script src="https://use.typekit.net/nwt1pjq.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
     <link rel="stylesheet" href="styles.css" />
 
@@ -34,8 +37,8 @@
       <div id="notePromptWrapper" class="closed">
         <div id="closedNotePrompt">
           <p>Take a note...</p>
-          <a href="#" id="listButton">List</a>
-          <a href="#" id="noteButton">Note</a>
+          <a href="#" id="listButton"><i class="fa fa-list" aria-hidden="true"></i></a>
+          <a href="#" id="noteButton"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>
         </div><!-- END closedNotePrompt -->
 
         <div id="noteInput">
@@ -47,7 +50,7 @@
         <div id="listInput">
           <input type="text" placeholder="Title" id="listTitle" class="titleInput"/>
           <ul>
-            <li><input type="text" placeholder="List Item" /> <a href="#" class="deleteListItem">X</a></li>
+            <li class="focused"><i class="fa fa-plus" aria-hidden="true"></i><input type="text" placeholder="List Item" /> <a href="#" class="deleteListItem"><i class="fa fa-times" aria-hidden="true"></i></a></li>
           </ul>
           <a href="#" id="saveList" class="saveButton">Save Note</a>
         </div><!-- END listInput -->
@@ -66,9 +69,9 @@
           <h2>Title Here</h2>
           <div class="listContainer">
             <ul>
-              <li>List Item</li>
-              <li>List Item</li>
-              <li>List Item</li>
+              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
+              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
+              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
             </ul>
           </div><!-- END listContainer -->
         </div><!-- END list -->
@@ -83,6 +86,10 @@
     </div><!-- END contentWrapper -->
 
     <div id="templateContainer" class="invisible">
+      <div id="inputListItems">
+        <li><i class="fa fa-plus" aria-hidden="true"></i><input type="text" placeholder="List Item" /> <a href="#" class="deleteListItem"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+      </div><!-- END inputListItems -->
+
       <div class="note">
         <h2>Title Here</h2>
         <div class="noteContents">
