@@ -26,6 +26,9 @@
     <link rel="stylesheet" href="styles.css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.js"></script>
+     <script src="lockr.js"></script>
     <script src="scripts.js"></script>
 
   </head>
@@ -57,30 +60,6 @@
       </div><!-- END notePromptWrapper -->
 
       <div id="notesWrapper">
-        <!-- Sample content for CSS work -->
-        <div class="note">
-          <h2>Title Here</h2>
-          <div class="noteContents">
-            Content Here, formatted like the textarea contained.
-          </div>
-        </div><!-- END note -->
-
-        <div class="list">
-          <h2>Title Here</h2>
-          <div class="listContainer">
-            <ul>
-              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
-              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
-              <li><i class="fa fa-plus" aria-hidden="true"></i> List Item</li>
-            </ul>
-          </div><!-- END listContainer -->
-        </div><!-- END list -->
-
-        <div class="note">
-          <div class="noteContents">
-            There's no title in this list.
-          </div>
-        </div><!-- END note -->
 
       </div><!-- END notesWrapper -->
     </div><!-- END contentWrapper -->
@@ -90,14 +69,14 @@
         <li><i class="fa fa-plus" aria-hidden="true"></i><input type="text" placeholder="List Item" /> <a href="#" class="deleteListItem"><i class="fa fa-times" aria-hidden="true"></i></a></li>
       </div><!-- END inputListItems -->
 
-      <div class="note">
+      <div class="note entry">
         <h2>Title Here</h2>
         <div class="noteContents">
           Content Here, formatted like the textarea contained.
         </div>
       </div><!-- END note -->
 
-      <div class="list">
+      <div class="list entry">
         <h2>Title Here</h2>
         <div class="listContainer">
           <ul>

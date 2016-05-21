@@ -89,9 +89,6 @@ Please note that the documentation I've written up below is light on the things 
         * Friends Signed Up
         * Progress to Another Free Note
         * Share Links Ready to Share
-        * Email Import
-            * Possibly a service somewhere else, needs research on how local in browser this could be
-            * Very possible that this will expose an API Key if I need to keep it just in flat html files
 * Growth Walls Trigger Share Prompts
     * Referral Landing Page
     * Personalized Landing
