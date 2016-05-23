@@ -1,6 +1,7 @@
 // Templates
 var noteTemplate,
     listTemplate;
+var currentlyEditing = null;
 
 $(document).ready(function(){
   // Item Template population
@@ -130,6 +131,21 @@ $(document).ready(function(){
     save(true);
   });
 
+  // Editing
+  $(document).on('click', '.entry', function(event){
+    event.stopPropagation();
+    var ID = $(this).attr('id');
+
+    var clickedData = _.find(Lockr.get('Zenenotes').notes, function(note){
+      if(note.id === ID){
+        console.log('DATA: ', note);
+        return true;
+      }
+    });
+
+    editNote(clickedData);
+  });
+
   // initial render if data exists
   var LockrData = Lockr.get('Zenenotes');
 
@@ -186,7 +202,14 @@ function save(list){
 
   // Build JSON
   var entryItem = {};
-  entryItem.id = (new Date).getTime();
+  if(!currentlyEditing){
+    entryItem.id = (new Date).getTime();
+  } else {
+    entryItem.id = currentlyEditing;
+    $('#'+currentlyEditing).remove();
+    currentlyEditing = null;
+    $('body').trigger('click');
+  }
 
   if(list){
     var title = $('#listInput #listTitle').val();
@@ -288,4 +311,31 @@ function createJSON(){
   });
   console.log(masterJSON);
   Lockr.set('Zenenotes', masterJSON);
+}
+
+function editNote(note){
+  currentlyEditing = note.id;
+
+  if(note.type === 'list'){
+    $('#notePromptWrapper').attr('class', 'open list');
+    $('#listTitle').trigger('focus');
+    $('#listTitle').val(note.title);
+    $.each(note.items, function(i, item){
+      console.log('ITEM: ', item);
+      if(i === 0){
+        $('#listInput ul li:first-child input').val(item);
+        $('#listInput ul').append($('#inputListItems').clone().html());
+        $('#listInput ul').find('li:last-child input').trigger('focus');
+      } else {
+        $('#listInput ul li:last-child input').val(item);
+        $('#listInput ul').append($('#inputListItems').clone().html());
+        $('#listInput ul').find('li:last-child input').trigger('focus');
+      }
+    });
+  } else if(note.type === 'note'){
+    $('#notePromptWrapper').attr('class', 'open note');
+    $('#noteInput #noteTitle').trigger('focus');
+    $('#noteTitle').val(note.title);
+    $('#noteBody').val(note.content);
+  }
 }
