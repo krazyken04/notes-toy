@@ -146,8 +146,24 @@ $(document).ready(function(){
     editNote(clickedData);
   });
 
+  $('#authSubmit').click(function(){
+    var email = $('#email').val();
+
+    if(email.length > 0){
+      getIdent(email);
+    } else {
+      console.log('Ident Error');
+      // identError();
+    }
+  });
+
   // initial render if data exists
   var LockrData = Lockr.get('Zenenotes');
+  var LockrIdent = Lockr.get('ZenenotesIdent');
+
+  if(LockrIdent){
+    identify(LockrIdent);
+  }
 
   if(LockrData){
     var sorted = _(LockrData.notes).sortBy(function(item){
@@ -156,24 +172,33 @@ $(document).ready(function(){
     $.each(sorted, function(i, note){
       renderItems(note, false);
     });
+
+    $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
+      $('#authSubmit').attr('class', 'grow2');
+      $('#avatar, #avatarWelcome').removeClass('invisible');
+      $('#avatar').animate({'opacity' : '1'}, 3000, function(){
+        $('#auth').addClass('takeOff').fadeOut('slow');
+      });
+    });
   }
 });
 
 // Sample JSON Storage
 /*
 {
+  email: STRING
   notes: [
     {
-      id: 1234
-      type: note,
-      title: title,
-      content: paragraphs
+      id: NUM
+      type: STRING (note / list),
+      title: STRING,
+      content: STRING
     },
 
     {
-      id: 2345,
-      type: list,
-      title: title,
+      id: NUM,
+      type: STRING,
+      title: STRING,
       items: [string, string, string]
     }
   ]
@@ -246,7 +271,6 @@ function renderItems(item, newItem){
       $('#notesWrapper').prepend(listTemplate);
       var $newItem = $('#notesWrapper .entry:first-child');
       $newItem.find('ul').empty();
-      console.log('RENDERING ITEMS: ', item.items);
       $.each(item.items, function(i, itemText){
         var clone = $('#templateContainer .listContainer li:first-child').clone().text(itemText);
         $newItem.find('ul').append(clone);
@@ -351,4 +375,72 @@ function editNote(note){
     $('#noteTitle').val(note.title);
     $('#noteBody').val(note.content);
   }
+}
+
+var welcomeOpen = false;
+function getIdent(email){
+  if(welcomeOpen){
+    return false;
+  }
+  // ACTUAL CALL
+  $.ajax({
+      method: "GET",
+      url: "https://api.fullcontact.com/v2/person.json",
+      data: { "apiKey": "e9326f3cf7d9ecc0", email: email }
+    })
+
+  // WHILE WORKING CALL
+  // $.ajax({
+  //   method: "GET",
+  //   url: 'ken.json'
+  // })
+
+  .done(function(resp){
+    console.log('ajax resp', resp);
+    var ident = {'email' : email, 'fullContact' : resp};
+    Lockr.set('ZenenotesIdent', ident);
+
+    identify(ident);
+  })
+
+  .error(function(jqXHR, textStatus, errorThrown){
+    console.log(jqXHR.status);
+
+    if(jqXHR.status === 422){
+      throwAuthError('That is not a real email address...');
+    } else if(jqXHR.status === 404){
+      var ident = {'email' : email};
+      Lockr.set('ZenenotesIdent', ident);
+      identify(ident);
+    }
+  });
+}
+
+function identify(ident){
+  console.log(ident);
+
+  if(ident.fullContact && ident.fullContact.photos){
+    var photo = ident.fullContact.photos[0].url;
+    $('#avatar img').attr('src', photo);
+  } else {
+    $('#avatar img').attr('src', 'https://s3.amazonaws.com/dialexa.com/assets/chromecast/welcome/noun_344493.png');
+  }
+
+  if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName){
+    $('#avatarWelcome em').text('Welcome, ' + ident.fullContact.contactInfo.givenName + '.');
+  } else {
+    $('#avatarWelcome em').text('Welcome to ZeneNotes!');
+  }
+
+  $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
+    $('#authSubmit').attr('class', 'grow2');
+    $('#avatar, #avatarWelcome').removeClass('invisible');
+    $('#avatar').animate({'opacity' : '1'}, 3000, function(){
+      $('#auth').addClass('takeOff').fadeOut('slow');
+    });
+  });
+}
+
+function throwAuthError(string){
+  console.log('auth error: ' + string);
 }
