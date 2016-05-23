@@ -207,8 +207,9 @@ function save(list){
   } else {
     entryItem.id = currentlyEditing;
     $('#'+currentlyEditing).remove();
-    $('body').trigger('click');
   }
+
+  $('body').trigger('click');
 
   if(list){
     var title = $('#listInput #listTitle').val();
@@ -316,11 +317,13 @@ function createJSON(){
 
   if(currentlyEditing){
     currentlyEditing = null;
-    $('.titleInput').val('');
-    $('#noteBody').val('');
-    $('#listInput ul').empty();
-    $('#listInput ul').append($('#inputListItems').clone().html());
   }
+
+  $('.titleInput').val('');
+  $('#noteBody').val('');
+  $('#listInput ul').empty();
+  $('#listInput ul').append($('#inputListItems').clone().html());
+
 }
 
 function editNote(note){
