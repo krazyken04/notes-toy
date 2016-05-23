@@ -207,7 +207,6 @@ function save(list){
   } else {
     entryItem.id = currentlyEditing;
     $('#'+currentlyEditing).remove();
-    currentlyEditing = null;
     $('body').trigger('click');
   }
 
@@ -217,6 +216,8 @@ function save(list){
     $('#listInput li').each(function(i, item){
       items.push($(item).find('input').val());
     });
+
+    console.log('items found!', items);
 
     if(title.length > 0){
       entryItem.title = title;
@@ -243,7 +244,8 @@ function renderItems(item, newItem){
     if(item.type === 'list'){
       $('#notesWrapper').prepend(listTemplate);
       var $newItem = $('#notesWrapper .entry:first-child');
-
+      $newItem.find('ul').empty();
+      console.log('RENDERING ITEMS: ', item.items);
       $.each(item.items, function(i, itemText){
         var clone = $('#templateContainer .listContainer li:first-child').clone().text(itemText);
         $newItem.find('ul').append(clone);
@@ -311,6 +313,14 @@ function createJSON(){
   });
   console.log(masterJSON);
   Lockr.set('Zenenotes', masterJSON);
+
+  if(currentlyEditing){
+    currentlyEditing = null;
+    $('.titleInput').val('');
+    $('#noteBody').val('');
+    $('#listInput ul').empty();
+    $('#listInput ul').append($('#inputListItems').clone().html());
+  }
 }
 
 function editNote(note){
