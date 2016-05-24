@@ -47,12 +47,14 @@ table {
   border-spacing: 0;
 }
 
+html {height: 100%;}
 body {
   padding: 45px 0 0 0;
-  background: #f7f4f0;
+  background: #f7f4f0 url(bg.png) no-repeat center center;
   font-family: "roboto", sans-serif;
   font-weight: 300;
   color: #232323;
+  height: 100%;
 }
 
 a {color: #232323;}
@@ -240,3 +242,19 @@ a {color: #232323;}
     transform: scale(1000);
     z-index: 9998;
   }
+
+/* Countdown / Gamification */
+
+/* Banner */
+#identCounter {
+  height: 45px;
+  position: absolute;
+  top: 0px;
+  right: 20px;
+  line-height: 45px;
+}
+
+  #identCounter span { font-size: 18px; font-family: 'Roboto', sans-serif; text-transform: initial; float: left; margin-right: 20px; }
+    #identCounter em {border-radius: 20px; background: #fff; color: #fa8d1c; text-align: center; width: 20px; height: 20px; line-height: 20px; display: inline-block; font-size: 16px; }
+
+  #identCounter img { width: 30px; height: 30px; display: inline-block; border-radius: 30px; margin-top: 7px; float: right;}

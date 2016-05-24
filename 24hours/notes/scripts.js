@@ -163,6 +163,7 @@ $(document).ready(function(){
 
   if(LockrIdent){
     identify(LockrIdent);
+    countNotesAndGrow();
   }
 
   if(LockrData){
@@ -173,20 +174,23 @@ $(document).ready(function(){
       renderItems(note, false);
     });
 
-    $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
-      $('#authSubmit').attr('class', 'grow2');
-      $('#avatar, #avatarWelcome').removeClass('invisible');
-      $('#avatar').animate({'opacity' : '1'}, 3000, function(){
-        $('#auth').addClass('takeOff').fadeOut('slow');
+    if(LockrIdent){
+      $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
+        $('#authSubmit').attr('class', 'grow2');
+        $('#avatar, #avatarWelcome').removeClass('invisible');
+        $('#avatar').animate({'opacity' : '1'}, 3000, function(){
+          $('#auth').addClass('takeOff').fadeOut('slow');
+        });
       });
-    });
+    }
+  } else {
+    Lockr.set('Zenenotes', {'notes' : []});
   }
 });
 
 // Sample JSON Storage
 /*
 {
-  email: STRING
   notes: [
     {
       id: NUM
@@ -209,16 +213,18 @@ function save(list){
 
   // Can we even save?
   var canSave;
-  if(list){
+  if(list && countNotesAndGrow(false)){
     $('#listInput ul li').each(function(i, item){
       if($(item).find('input').val().length > 0){
         canSave = true;
       }
     });
-  } else {
+  } else if(countNotesAndGrow(false)){
     if($('#noteBody').val().length > 0){
       canSave = true;
     }
+  } else {
+    countNotesAndGrow(true);
   }
 
   if(!canSave){
@@ -347,7 +353,7 @@ function createJSON(){
   $('#noteBody').val('');
   $('#listInput ul').empty();
   $('#listInput ul').append($('#inputListItems').clone().html());
-
+  countNotesAndGrow(false);
 }
 
 function editNote(note){
@@ -397,7 +403,7 @@ function getIdent(email){
 
   .done(function(resp){
     console.log('ajax resp', resp);
-    var ident = {'email' : email, 'fullContact' : resp};
+    var ident = {'email' : email, 'fullContact' : resp, 'notesCapacity' : 2};
     Lockr.set('ZenenotesIdent', ident);
 
     identify(ident);
@@ -421,9 +427,9 @@ function identify(ident){
 
   if(ident.fullContact && ident.fullContact.photos){
     var photo = ident.fullContact.photos[0].url;
-    $('#avatar img').attr('src', photo);
+    $('#avatar img, #identCounter img').attr('src', photo);
   } else {
-    $('#avatar img').attr('src', 'https://s3.amazonaws.com/dialexa.com/assets/chromecast/welcome/noun_344493.png');
+    $('#avatar img, #identCounter img').attr('src', 'https://s3.amazonaws.com/dialexa.com/assets/chromecast/welcome/noun_344493.png');
   }
 
   if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName){
@@ -431,6 +437,8 @@ function identify(ident){
   } else {
     $('#avatarWelcome em').text('Welcome to ZeneNotes!');
   }
+
+  $('#identCounter em').text(ident.notesCapacity);
 
   $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
     $('#authSubmit').attr('class', 'grow2');
@@ -443,4 +451,26 @@ function identify(ident){
 
 function throwAuthError(string){
   console.log('auth error: ' + string);
+}
+
+function countNotesAndGrow(overlayTriggerable){
+  var ident = Lockr.get('ZenenotesIdent').notesCapacity;
+  var notes = Lockr.get('Zenenotes').notes;
+  var notesLeft = ident - notes.length;
+  $('#identCounter em').text(notesLeft);
+
+  // Can we save?
+  if(notesLeft <= 0){
+    if(overlayTriggerable){
+      triggerShareOverlay();
+    }
+
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function triggerShareOverlay(){
+  console.log('trigger growth');
 }
