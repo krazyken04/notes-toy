@@ -223,6 +223,8 @@ function save(list){
     if($('#noteBody').val().length > 0){
       canSave = true;
     }
+  } else if(currentlyEditing) {
+    canSave = true;
   } else {
     countNotesAndGrow(true);
   }
