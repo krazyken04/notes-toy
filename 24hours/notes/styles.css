@@ -258,3 +258,22 @@ a {color: #232323;}
     #identCounter em {border-radius: 20px; background: #fff; color: #fa8d1c; text-align: center; width: 20px; height: 20px; line-height: 20px; display: inline-block; font-size: 16px; }
 
   #identCounter img { width: 30px; height: 30px; display: inline-block; border-radius: 30px; margin-top: 7px; float: right;}
+
+#sharePrompt { position: fixed; height: 100%; width: 100%; z-index: 99999; background: #ff7033; color: #fff; padding-top: 45px; margin-top: -45px; text-align: center; font-family: 'Helvetica'; display: flex; flex-direction: column; justify-content: center; transition: all 1s; transform: translate(0, -100%);}
+#sharePrompt.visible {transform: translate(0,0);}
+  #message { margin-top: -10vh; }
+    #message h1 { font-size: 45px; line-height: 85px; font-weight: 100; margin: 0 auto; margin-bottom: 28px; width: 672px; text-align: left;}
+      #message h1 strong {font-weight: bold;}
+      #message h1 em {}
+    #message p { font-size: 29px; line-height: 28px; font-weight: 100; width: 672px; text-align: left; margin: 0 auto;}
+      #message p strong {display: block; font-size: 24px; font-weight: bold; margin-bottom: 18px;}
+  #chooseContent {  }
+    #chooseContent h2 {}
+    #contentList {}
+      #contentList ul { width: 672px; margin: 40px auto; overflow: hidden;}
+        #contentList ul li { width: 224px; height: 132px; background-repeat: no-repeat; background-position: center center; float: left; margin: 0px; padding: 0px;}
+        #contentList ul li:hover {cursor: pointer;}
+          li#resume {background: url(sharing-assets/resume.png);}
+          li#app {background: url(sharing-assets/app.png);}
+          li#rick {background: url(sharing-assets/rick.png);}
+        #chooseContent a { color: #333; }

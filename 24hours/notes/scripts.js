@@ -157,6 +157,8 @@ $(document).ready(function(){
     }
   });
 
+  $('#nothanks').click(hideOverlay);
+
   // initial render if data exists
   var LockrData = Lockr.get('Zenenotes');
   var LockrIdent = Lockr.get('ZenenotesIdent');
@@ -475,4 +477,9 @@ function countNotesAndGrow(overlayTriggerable){
 
 function triggerShareOverlay(){
   console.log('trigger growth');
+  $('#sharePrompt').addClass('visible')
+}
+
+function hideOverlay(){
+  $('#sharePrompt').removeClass('visible')
 }

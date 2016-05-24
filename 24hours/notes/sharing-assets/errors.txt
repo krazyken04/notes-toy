@@ -1,0 +1,3 @@
+[Mon May 23 2016 20:07:12 GMT-0500 (CDT)] layer "+10 NOTES": Expected Either a default asset specification or a layer asset specification but "+" found.
+[Mon May 23 2016 20:07:12 GMT-0500 (CDT)] layer "+5 NOTES": Expected Either a default asset specification or a layer asset specification but "+" found.
+[Mon May 23 2016 20:07:12 GMT-0500 (CDT)] layer "+ 1 NOTE": Expected Either a default asset specification or a layer asset specification but "+" found.
