@@ -161,9 +161,14 @@ $(document).ready(function(){
   $('#takeMeBack').click(takeMeBack);
 
   $('#resume').click(function(){
-    if(!Lockr.get('ZenenotesIdent').storyShared){
+    var last = Lockr.get('ZenenotesIdent').lastStoryShared;
+    var lastTimer = moment(last).add(20, 'minutes');
+    var timeLeft = lastTimer.diff(moment(), 'minutes');
+
+    if(last && timeLeft <= 0){
       onContentSelected('story');
     } else {
+      console.log(timeLeft);
       prompt1PerDay();
     }
   });
@@ -171,8 +176,6 @@ $(document).ready(function(){
   $('#app').click(function(){
     if(!Lockr.get('ZenenotesIdent').appShared){
       onContentSelected('app');
-    } else {
-      prompt1PerDay();
     }
   });
 
@@ -191,6 +194,7 @@ $(document).ready(function(){
   if(LockrIdent){
     identify(LockrIdent);
     countNotesAndGrow();
+    wireUpTimers(LockrIdent);
   }
 
   if(LockrData){
@@ -651,4 +655,62 @@ function successfulShare(){
 
 function prompt1PerDay(){
   console.log(Lockr.get('ZenenotesIdent').lastStoryShared, Lockr.get('ZenenotesIdent').lastAppShared, Lockr.get('ZenenotesIdent').lastRickShared);
+  var twentyMinsAfter = moment(Lockr.get('ZenenotesIdent').lastStoryShared).add('20', 'minutes');
+  var now = moment();
+  console.log(twentyMinsAfter.diff(now,'minutes'));
+}
+
+function wireUpTimers(LockrIdent){
+  if(LockrIdent.lastStoryShared){
+    var lastStory = LockrIdent.lastStoryShared;
+    var lastStoryTimer = moment(lastStory).add(20, 'minutes');
+    var storyTimeLeft = lastStoryTimer.diff(moment(), 'minutes');
+    console.log(storyTimeLeft, 'STORY');
+    timerFire('#resume', storyTimeLeft*60);
+  }
+
+  if(LockrIdent.lastAppShared){
+    var lastApp = LockrIdent.lastAppShared;
+    var lastAppTimer = moment(lastApp).add(20, 'minutes');
+    var appTimeLeft = lastAppTimer.diff(moment(), 'minutes');
+    console.log(appTimeLeft, 'APP');
+  }
+
+  if(LockrIdent.lastRickShared){
+    var lastRick = LockrIdent.lastRickShared;
+    var lastRickTimer = moment(lastRick).add(20, 'minutes');
+    var rickTimeLeft = lastRickTimer.diff(moment(), 'minutes');
+    console.log(rickTimeLeft, 'RICK');
+  }
+}
+
+// http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
+// window.onload = function () {
+//     var fiveMinutes = 60 * 17,
+//         display = $('#time');
+//     startTimer(fiveMinutes, display);
+// };
+
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.text(minutes + ":" + seconds);
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+function timerFire(selector, time){
+  $(selector).append('<span class="countdown"></span>');
+  console.log('TIMER FIRE', selector, time);
+  startTimer(time, $(selector + ' .countdown'));
+  triggerShareOverlay();
 }
