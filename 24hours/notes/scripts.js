@@ -161,15 +161,27 @@ $(document).ready(function(){
   $('#takeMeBack').click(takeMeBack);
 
   $('#resume').click(function(){
-    onContentSelected('story');
+    if(!Lockr.get('ZenenotesIdent').storyShared){
+      onContentSelected('story');
+    } else {
+      prompt1PerDay();
+    }
   });
 
   $('#app').click(function(){
-    onContentSelected('app');
+    if(!Lockr.get('ZenenotesIdent').appShared){
+      onContentSelected('app');
+    } else {
+      prompt1PerDay();
+    }
   });
 
   $('#rick').click(function(){
-    onContentSelected('rick');
+    if(!Lockr.get('ZenenotesIdent').rickShared){
+      onContentSelected('rick');
+    } else {
+      prompt1PerDay();
+    }
   });
 
   // initial render if data exists
@@ -453,7 +465,7 @@ function getIdent(email){
     if(jqXHR.status === 422){
       throwAuthError('That is not a real email address...');
     } else if(jqXHR.status === 404){
-      var ident = {'email' : email};
+      var ident = {'email' : email, 'notesCapacity' : 2};
       Lockr.set('ZenenotesIdent', ident);
       identify(ident);
     }
@@ -544,7 +556,7 @@ function formatTwitterLink(){
   if(contentSelected === 'story'){
     tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: bit.ly/GrowthMachine');
   } else if(contentSelected === 'app'){
-    tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds a Note Taking app in 24hrs for a job interview and turns it into a Growth Machine bit.ly/GrowthMachine');
+    tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds Note Taking app in 24hrs for a job interview and turns it into a Growth Machine bit.ly/GrowthMachine');
   } else if(contentSelected === 'rick'){
     tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 grows a startup to 100M users in 14 days! https://www.zenenotes.com/100M-Users');
   }
@@ -615,17 +627,28 @@ function successfulShare(){
   console.log('AWARD POINTS!');
 
 
+
   var ident = Lockr.get('ZenenotesIdent');
 
   if(contentSelected === 'story'){
     ident.notesCapacity += 10;
+    ident.storyShared = true;
+    ident.lastStoryShared = new Date();
   } else if(contentSelected === 'app'){
     ident.notesCapacity += 5;
+    ident.appShared = true;
+    ident.lastAppShared = new Date();
   } else if(contentSelected === 'rick'){
     ident.notesCapacity += 1;
+    ident.rickShared = true;
+    ident.lastRickShared = new Date();
   }
 
   Lockr.set('ZenenotesIdent', ident);
   console.log(Lockr.get('ZenenotesIdent'));
   countNotesAndGrow(false);
+}
+
+function prompt1PerDay(){
+  console.log(Lockr.get('ZenenotesIdent').lastStoryShared, Lockr.get('ZenenotesIdent').lastAppShared, Lockr.get('ZenenotesIdent').lastRickShared);
 }
