@@ -607,6 +607,7 @@ function shareFacebookContent(){
 function successfulShare(){
   console.log('AWARD POINTS!');
 
+
   var ident = Lockr.get('ZenenotesIdent');
 
   if(contentSelected === 'story'){
