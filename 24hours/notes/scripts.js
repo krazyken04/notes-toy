@@ -212,7 +212,10 @@ $(document).ready(function(){
 
       twttr.events.bind(
         'tweet',
-        successfulShare
+        function(){
+          $('#twitter').addClass('done');
+          successfulShare();
+        }
       );
 
     }
@@ -574,7 +577,10 @@ function shareLinkedInContent() {
   IN.API.Raw("/people/~/shares?format=json")
     .method("POST")
     .body(JSON.stringify(payload))
-    .result(successfulShare);
+    .result(function(response){
+      $('#linkedin').addClass('done');
+      successfulShare();
+    });
 }
 
 function shareFacebookContent(){
@@ -599,6 +605,7 @@ function shareFacebookContent(){
     quote: quote
   }, function(response){
     if(response !== undefined){
+      $('#facebook').addClass('done');
       successfulShare();
     }
   });
