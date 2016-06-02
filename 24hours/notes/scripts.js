@@ -158,6 +158,19 @@ $(document).ready(function(){
   });
 
   $('#nothanks').click(hideOverlay);
+  $('#takeMeBack').click(takeMeBack);
+
+  $('#resume').click(function(){
+    onContentSelected('story');
+  });
+
+  $('#app').click(function(){
+    onContentSelected('app');
+  });
+
+  $('#rick').click(function(){
+    onContentSelected('rick');
+  });
 
   // initial render if data exists
   var LockrData = Lockr.get('Zenenotes');
@@ -188,6 +201,24 @@ $(document).ready(function(){
   } else {
     Lockr.set('Zenenotes', {'notes' : []});
   }
+
+  // Sharing wireups
+  $('#linkedin').click(function(){
+    IN.User.authorize(shareLinkedInContent);
+  });
+
+  twttr.ready(
+    function (twttr) {
+
+      twttr.events.bind(
+        'tweet',
+        successfulShare
+      );
+
+    }
+  );
+
+  $('#facebook').click(shareFacebookContent);
 });
 
 // Sample JSON Storage
@@ -438,8 +469,10 @@ function identify(ident){
 
   if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName){
     $('#avatarWelcome em').text('Welcome, ' + ident.fullContact.contactInfo.givenName + '.');
+    $('#message h1 em').text(ident.fullContact.contactInfo.givenName);
   } else {
     $('#avatarWelcome em').text('Welcome to ZeneNotes!');
+    $('#message h1').html('You <strong>studious devil!</strong>');
   }
 
   $('#identCounter em').text(ident.notesCapacity);
@@ -461,6 +494,12 @@ function countNotesAndGrow(overlayTriggerable){
   var ident = Lockr.get('ZenenotesIdent').notesCapacity;
   var notes = Lockr.get('Zenenotes').notes;
   var notesLeft = ident - notes.length;
+
+  if(isNaN(notesLeft)){
+    console.log('NaN!!!', ident, notes);
+    notesLeft = 2;
+  }
+
   $('#identCounter em').text(notesLeft);
 
   // Can we save?
@@ -482,4 +521,103 @@ function triggerShareOverlay(){
 
 function hideOverlay(){
   $('#sharePrompt').removeClass('visible')
+}
+
+var contentSelected = 'story';
+function onContentSelected(content){
+  contentSelected = content;
+  $('#chooseContent').attr('class', 'invisible');
+  $('#choosePlatform').attr('class', 'visible');
+  formatTwitterLink();
+}
+
+function takeMeBack(){
+  $('#chooseContent').attr('class', 'visible');
+  $('#choosePlatform').attr('class', 'invisible');
+}
+
+function formatTwitterLink(){
+  var tweetText;
+  if(contentSelected === 'story'){
+    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: bit.ly/GrowthMachine');
+  } else if(contentSelected === 'app'){
+    tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds a Note Taking app in 24hrs for a job interview and turns it into a Growth Machine bit.ly/GrowthMachine');
+  } else if(contentSelected === 'rick'){
+    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 grows a startup to 100M users in 14 days! https://www.zenenotes.com/100M-Users');
+  }
+  var newLink = 'https://twitter.com/intent/tweet?text='+tweetText;
+  $('#twitter a').attr('href', newLink);
+}
+
+function onLinkedInAuth(){
+  IN.Event.on(IN, "auth", shareLinkedInContent);
+}
+
+function shareLinkedInContent() {
+  var content;
+  if(contentSelected === 'story'){
+    content = 'Read the Case Study: Growth Engineer takes job interview and turns it into a growth machine. https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052'
+  } else if(contentSelected === 'app'){
+    content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. https://www.zenenotes.com'
+  } else if(contentSelected === 'rick'){
+    content = 'Growth Engineer exposes how he grew a user base to 100M users in 14 days! https://www.zenenotes.com/100M-Users'
+  }
+
+  // Build the JSON payload containing the content to be shared
+  var payload = {
+    "comment": content,
+    "visibility": {
+      "code": "anyone"
+    }
+  };
+
+  IN.API.Raw("/people/~/shares?format=json")
+    .method("POST")
+    .body(JSON.stringify(payload))
+    .result(successfulShare);
+}
+
+function shareFacebookContent(){
+  var href,
+      quote;
+
+  if(contentSelected === 'story'){
+    href = 'https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052';
+    quote = 'How I turned a Job Interview into a Growth Machine';
+  } else if(contentSelected === 'app'){
+    href = 'https://www.zenenotes.com';
+    quote = 'A growth engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine.'
+  } else if(contentSelected === 'rick'){
+    href = 'https://www.zenenotes.com/100M-Users';
+    quote = 'Growth engineer exposes how he grew a user base to 100M users in 14 days!'
+  }
+
+  FB.ui({
+    method: 'share',
+    href: href,
+    hashtag: '#GrowthEngineering',
+    quote: quote
+  }, function(response){
+    if(response !== undefined){
+      successfulShare();
+    }
+  });
+}
+
+function successfulShare(){
+  console.log('AWARD POINTS!');
+
+  var ident = Lockr.get('ZenenotesIdent');
+
+  if(contentSelected === 'story'){
+    ident.notesCapacity += 10;
+  } else if(contentSelected === 'app'){
+    ident.notesCapacity += 5;
+  } else if(contentSelected === 'rick'){
+    ident.notesCapacity += 1;
+  }
+
+  Lockr.set('ZenenotesIdent', ident);
+  console.log(Lockr.get('ZenenotesIdent'));
+  countNotesAndGrow(false);
 }

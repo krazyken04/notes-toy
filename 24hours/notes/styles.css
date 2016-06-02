@@ -267,13 +267,20 @@ a {color: #232323;}
       #message h1 em {}
     #message p { font-size: 29px; line-height: 28px; font-weight: 100; width: 672px; text-align: left; margin: 0 auto;}
       #message p strong {display: block; font-size: 24px; font-weight: bold; margin-bottom: 18px;}
+
   #chooseContent {  }
     #chooseContent h2 {}
     #contentList {}
-      #contentList ul { width: 672px; margin: 40px auto; overflow: hidden;}
-        #contentList ul li { width: 224px; height: 132px; background-repeat: no-repeat; background-position: center center; float: left; margin: 0px; padding: 0px;}
-        #contentList ul li:hover {cursor: pointer;}
+      #contentList ul, #platformList ul { width: 672px; margin: 40px auto; overflow: hidden;}
+        #contentList ul li, #platformList ul li { width: 224px; height: 132px; background-repeat: no-repeat; background-position: center center; float: left; margin: 0px; padding: 0px;}
+        #contentList ul li:hover, #platformList ul li {cursor: pointer;}
           li#resume {background: url(sharing-assets/resume.png);}
           li#app {background: url(sharing-assets/app.png);}
           li#rick {background: url(sharing-assets/rick.png);}
+
+          li#linkedin {background: url(sharing-assets/linkedin.png);}
+          li#twitter {background: url(sharing-assets/twitter.png); position: relative;}
+            li#twitter a {display: block; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px;}
+          li#facebook {background: url(sharing-assets/facebook.png);}
+
         #chooseContent a { color: #333; }

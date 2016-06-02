@@ -28,19 +28,59 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.js"></script>
-     <script src="lockr.js"></script>
+    <script src="lockr.js"></script>
+
+    <script type="text/javascript" src="//platform.linkedin.com/in.js">
+      api_key: 7841qna7x4ky8b
+    </script>
+
+    <script>window.twttr = (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
+
+      t._e = [];
+      t.ready = function(f) {
+        t._e.push(f);
+      };
+
+      return t;
+    }(document, "script", "twitter-wjs"));</script>
+
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '658448644305135',
+          xfbml      : true,
+          version    : 'v2.6'
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "//connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+
     <script src="scripts.js"></script>
 
   </head>
   <body>
 
-    <div id="sharePrompt">
+    <div id="sharePrompt" class="visible">
       <div id="message">
         <h1><em>Ken</em>, you <strong>studious devil!</strong></h1>
         <p><strong>You're out of free notes!</strong> Get some free ones just by sharing!</p>
       </div><!-- END message -->
 
-      <div id="chooseContent">
+      <div id="chooseContent" class="invisible">
         <div id="contentList">
           <ul>
             <li id="resume"></li>
@@ -50,6 +90,18 @@
         </div><!-- END shareList -->
 
         <a href="#" id="nothanks">No thanks, I don't want any other employers to know how awesome Ken is...</a>
+      </div><!-- END chooseContent -->
+
+      <div id="choosePlatform">
+        <div id="platformList">
+          <ul>
+            <li id="linkedin"></li>
+            <li id="twitter"><a href="https://twitter.com/intent/tweet"></a></li>
+            <li id="facebook"></li>
+          </ul>
+        </div><!-- END shareList -->
+
+        <a href="#" id="takeMeBack"><< Take me back</a>
       </div><!-- END chooseContent -->
 
     </div><!-- END sharePrompt -->
