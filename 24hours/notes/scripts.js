@@ -207,6 +207,7 @@ $(document).ready(function(){
 
     if(LockrIdent){
       $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
+        console.log('GROW2!');
         $('#authSubmit').attr('class', 'grow2');
         $('#avatar, #avatarWelcome').removeClass('invisible');
         $('#avatar').animate({'opacity' : '1'}, 3000, function(){
@@ -498,7 +499,8 @@ function identify(ident){
 
   $('#identCounter em').text(ident.notesCapacity);
 
-  $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
+  $('#authSubmit').attr('class', 'grow1').animate({'opacity' : '1'}, 2000, function(){
+    console.log('animation complete! Grow2 go!');
     $('#authSubmit').attr('class', 'grow2');
     $('#avatar, #avatarWelcome').removeClass('invisible');
     $('#avatar').animate({'opacity' : '1'}, 3000, function(){
@@ -670,7 +672,9 @@ function prompt1PerDay(){
 
 function wireUpTimers(LockrIdent){
   for (var i = 1; i < 100; i++)
-        window.clearInterval(i);
+        if($('#auth').hasClass('takeOff')){
+          window.clearInterval(i);
+        }
 
   if(LockrIdent.lastStoryShared){
     var lastStory = LockrIdent.lastStoryShared;
@@ -726,5 +730,4 @@ function timerFire(selector, time){
   }
 
   startTimer(time, $(selector + ' .countdown'));
-  triggerShareOverlay();
 }

@@ -288,4 +288,4 @@ a {color: #232323;}
           li#facebook.done {background: url(sharing-assets/images/facebookDone.png); background-repeat: no-repeat; background-position: center center;}
 
         #chooseContent a { color: #333; }
-          .countdown {position: absolute; top: 2px; left: 15px; background: rgba(0,0,0,0.5); line-height: 118px; font-size: 50px; display: block; width: 194px; height: 118px; border-radius: 4px;}
+          #chooseContent .countdown {position: absolute; top: 2px; left: 15px; background: rgba(0,0,0,0.5); line-height: 118px; font-size: 50px; display: block; width: 194px; height: 118px; border-radius: 4px;}
