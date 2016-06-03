@@ -165,7 +165,7 @@ $(document).ready(function(){
     var lastTimer = moment(last).add(20, 'minutes');
     var timeLeft = lastTimer.diff(moment(), 'minutes');
 
-    if(last && timeLeft <= 0){
+    if(last && timeLeft <= 0 || !last){
       onContentSelected('story');
     } else {
       console.log(timeLeft);
@@ -229,8 +229,10 @@ $(document).ready(function(){
       twttr.events.bind(
         'tweet',
         function(){
+          if(!$('#twitter').hasClass('done')){
+            successfulShare();
+          }
           $('#twitter').addClass('done');
-          successfulShare();
         }
       );
 
@@ -553,6 +555,7 @@ function onContentSelected(content){
 function takeMeBack(){
   $('#chooseContent').attr('class', 'visible');
   $('#choosePlatform').attr('class', 'invisible');
+  $('.done').removeClass('done');
 }
 
 function formatTwitterLink(){
@@ -594,8 +597,10 @@ function shareLinkedInContent() {
     .method("POST")
     .body(JSON.stringify(payload))
     .result(function(response){
+      if(!$('#linkedin').hasClass('done')){
+        successfulShare();
+      }
       $('#linkedin').addClass('done');
-      successfulShare();
     });
 }
 
@@ -621,8 +626,10 @@ function shareFacebookContent(){
     quote: quote
   }, function(response){
     if(response !== undefined){
+      if(!$('#facebook').hasClass('done')){
+        successfulShare();
+      }
       $('#facebook').addClass('done');
-      successfulShare();
     }
   });
 }
@@ -650,6 +657,7 @@ function successfulShare(){
 
   Lockr.set('ZenenotesIdent', ident);
   console.log(Lockr.get('ZenenotesIdent'));
+  wireUpTimers(Lockr.get('ZenenotesIdent'));
   countNotesAndGrow(false);
 }
 
@@ -661,11 +669,13 @@ function prompt1PerDay(){
 }
 
 function wireUpTimers(LockrIdent){
+  for (var i = 1; i < 100; i++)
+        window.clearInterval(i);
+
   if(LockrIdent.lastStoryShared){
     var lastStory = LockrIdent.lastStoryShared;
     var lastStoryTimer = moment(lastStory).add(20, 'minutes');
     var storyTimeLeft = lastStoryTimer.diff(moment(), 'minutes');
-    console.log(storyTimeLeft, 'STORY');
     timerFire('#resume', storyTimeLeft*60);
   }
 
@@ -673,14 +683,14 @@ function wireUpTimers(LockrIdent){
     var lastApp = LockrIdent.lastAppShared;
     var lastAppTimer = moment(lastApp).add(20, 'minutes');
     var appTimeLeft = lastAppTimer.diff(moment(), 'minutes');
-    console.log(appTimeLeft, 'APP');
+    timerFire('#app', appTimeLeft*60);
   }
 
   if(LockrIdent.lastRickShared){
     var lastRick = LockrIdent.lastRickShared;
     var lastRickTimer = moment(lastRick).add(20, 'minutes');
     var rickTimeLeft = lastRickTimer.diff(moment(), 'minutes');
-    console.log(rickTimeLeft, 'RICK');
+    timerFire('#rick', rickTimeLeft*60);
   }
 }
 
@@ -692,8 +702,9 @@ function wireUpTimers(LockrIdent){
 // };
 
 function startTimer(duration, display) {
+
     var timer = duration, minutes, seconds;
-    setInterval(function () {
+    window.setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -703,14 +714,17 @@ function startTimer(duration, display) {
         display.text(minutes + ":" + seconds);
 
         if (--timer < 0) {
-            timer = duration;
+            console.log('NEGATIVE TIME!')
+            display.remove();
         }
     }, 1000);
 }
 
 function timerFire(selector, time){
-  $(selector).append('<span class="countdown"></span>');
-  console.log('TIMER FIRE', selector, time);
+  if($(selector + ' .countdown').size() === 0){
+    $(selector).append('<span class="countdown"></span>');
+  }
+
   startTimer(time, $(selector + ' .countdown'));
   triggerShareOverlay();
 }

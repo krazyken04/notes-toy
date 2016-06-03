@@ -272,7 +272,7 @@ a {color: #232323;}
     #chooseContent h2 {}
     #contentList {}
       #contentList ul, #platformList ul { width: 672px; margin: 40px auto; overflow: hidden;}
-        #contentList ul li, #platformList ul li { width: 224px; height: 132px; background-repeat: no-repeat; background-position: center center; float: left; margin: 0px; padding: 0px;}
+        #contentList ul li, #platformList ul li { width: 224px; height: 132px; background-repeat: no-repeat; background-position: center center; float: left; margin: 0px; padding: 0px;  position: relative;}
         #contentList ul li:hover, #platformList ul li {cursor: pointer;}
           li#resume {background: url(sharing-assets/images/resume.png);}
           li#app {background: url(sharing-assets/images/app.png);}
@@ -288,3 +288,4 @@ a {color: #232323;}
           li#facebook.done {background: url(sharing-assets/images/facebookDone.png); background-repeat: no-repeat; background-position: center center;}
 
         #chooseContent a { color: #333; }
+          .countdown {position: absolute; top: 2px; left: 15px; background: rgba(0,0,0,0.5); line-height: 118px; font-size: 50px; display: block; width: 194px; height: 118px; border-radius: 4px;}
