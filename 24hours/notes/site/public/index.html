@@ -11,13 +11,13 @@
     <meta property="og:title" content="ZeneNotes: THE note taking app for Growth Engineers" />
     <meta property="og:site_name" content="ZeneNotes"/>
     <meta property="og:description" content="Ken Hanson created ZeneNotes for a job interview's Growth Engineering challenge. See why he's the best man for the job!" />
-    <meta property="og:image" content="https://dialexa-ken.usefinch.us/24hours/notes/zenenotes.com/images/facebookShare.png" />
+    <meta property="og:image" content="http://shielded-everglades-95095.herokuapp.com/images/facebookShare.png" />
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@kenhanson04">
     <meta name="twitter:title" content="ZeneNotes: THE note taking app for Growth Engineers">
     <meta name="twitter:description" content="Ken Hanson created ZeneNotes for a job interview's Growth Engineering challenge. See why he's the best man for the job!">
-    <meta name="twitter:image" content="https://dialexa-ken.usefinch.us/24hours/notes/zenenotes.com/images/twitterShare.png">
+    <meta name="twitter:image" content="http://shielded-everglades-95095.herokuapp.com/images/twitterShare.png">
 
 
         <!-- Site title -->
@@ -110,8 +110,8 @@
                             Seriously, this thing <span class="bold">IS</span> the end of the rainbow. <br/> It's got <span class="bold">1 Million Stars out of 5 Stars</span>
                         </p>
                         <div class="downloads space10">
-                            <a href="https://www.zenenotes.com/app/"><img src="images/downloads/apple.png" alt="apple" /></a>
-                            <a href="https://www.zenenotes.com/app/"><img src="images/downloads/android.png" alt="android"/></a>
+                            <a href="/app/"><img src="images/downloads/apple.png" alt="apple" /></a>
+                            <a href="/app/"><img src="images/downloads/android.png" alt="android"/></a>
                         </div><!-- downloads end -->
                     </div><!-- col-md-6 end -->
                 </div><!-- row end -->
@@ -217,14 +217,13 @@
         <footer>
             <div class="container">
                 <div class="col-md-12">
-                    <a href="#page-top" class="page-scroll"><img src="images/footer-logo.png" alt="WAVA"/></a>
                     <div class="space50"></div>
                     <ul  class="clearlist socialList">
-                        <li><a href="https://www.facebook.com/ken.hanson"><i class="fa fa-facebook"></i><span class="hidden-xs"> Facebook </span></a></li>
-                        <li><a href="https://www.twitter.com/kenhanson04"><i class="fa fa-twitter"></i><span class="hidden-xs">Twitter</span></a></li>
-                        <li><a href="https://www.linkedin.com/in/kenhanson"><i class="fa fa-linkedin"></i><span class="hidden-xs">Linkedin</span></a></li>
-                        <li><a href="https://dribbble.com/kenhanson"><i class="fa fa-dribbble"></i><span class="hidden-xs">dribbble</span></a></li>
-                        <li><a href="https://github.com/krazyken04/notes-toy"><i class="fa fa-github"></i><span class="hidden-xs">github</span></a></li>
+                        <li><a href="http://www.facebook.com/ken.hanson"><i class="fa fa-facebook"></i><span class="hidden-xs"> Facebook </span></a></li>
+                        <li><a href="http://www.twitter.com/kenhanson04"><i class="fa fa-twitter"></i><span class="hidden-xs">Twitter</span></a></li>
+                        <li><a href="http://www.linkedin.com/in/kenhanson"><i class="fa fa-linkedin"></i><span class="hidden-xs">Linkedin</span></a></li>
+                        <li><a href="http://dribbble.com/kenhanson"><i class="fa fa-dribbble"></i><span class="hidden-xs">dribbble</span></a></li>
+                        <li><a href="http://github.com/krazyken04/notes-toy"><i class="fa fa-github"></i><span class="hidden-xs">github</span></a></li>
                     </ul>
                 </div><!-- col-md-12 end -->
             </div><!-- container end -->
@@ -247,5 +246,46 @@
         <script src="js/script.js"></script>
 
         <a class="version" href="../android"><i class="fa fa-android"></i></a>
+
+    <!-- Start Notification Widget -->
+    <style>
+      #notification { font-family: 'Helvetica'; width: 400px; height: 300px; position: fixed; bottom: 20px; right: 20px; z-index: 999999; background: #fefefc; border-radius: 8px; border: solid 1px #e2e6ec; transition: all 1s; transform: translate(0,450px);}
+      #notification.show {transform: translate(0,0); opacity: 1;}
+        #notificationIdent { position: absolute; height: 100px; top: -50px; left: 50%; margin: 0 0 0 -50px; }
+          #notificationIdent img { display: bock; width: 100px; height: 100px; border-radius: 100px; border: solid 2px #e2e6ec;}
+        #notificationContent { padding: 75px 20px 0 20px; }
+          #notificationContent h1 { font-size: 24px; margin: 0 0 20px; padding: 0px;}
+          #notificationContent p {font-size: 16px; line-height: 23px; margin: 0 0 8px; padding: 0px;}
+          #notificationContent a#cta { display: block; text-decoration: none; border-radius: 8px; width: 100%; height: 45px; line-height: 45px; background: #fa8d1c; text-align: center; margin-top: 20px; color: #fff; font-weight: bold;}
+        #close { font-size: 24px; font-weight: 100; text-align: center; line-height: 32px; height: 32px; width: 32px; position: absolute; top: -16px; right: -16px; background: #fff; border: solid 2px #e2e6ec; border-radius: 32px; color: #fa8d1c; }
+        #close:hover {cursor: pointer;}
+
+        @media only screen and (max-width : 400px) {
+          #notification {width: 350px; height: 350px;}
+        }
+    </style>
+
+    <script>
+      $(document).ready(function(){
+        $('#notification').addClass('show');
+        var notificationAudio = new Audio('../sounds/secret.mp3');
+        notificationAudio.volume = 0.2;
+        notificationAudio.play();
+        $('#notification #close').click(function(){
+          $('#notification').removeClass('show');
+        });
+      });
+    </script>
+
+    <div id="notification">
+      <div id="notificationIdent"><img src="../images/profile_square.jpg"/></div>
+      <div id="notificationContent">
+        <span id="close">X</span>
+        <h1>Hey there...</h1>
+        <p>This is one part of the puzzle I created for a job interview with <a href="http://www.zenefits.com">Zenefits.</a></p>
+        <p><a href="http://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052" target="_blank" id="cta">Read the Whole Story on Medium</a></p>
+      </div>
+    </div><!-- END notification widget -->
+
     </body>
 </html>

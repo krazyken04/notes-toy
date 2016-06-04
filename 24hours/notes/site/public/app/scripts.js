@@ -207,7 +207,6 @@ $(document).ready(function(){
 
     if(LockrIdent){
       $('#authSubmit').attr('class', 'grow1').animate({'background-color' : '#f44e2a'}, 2000, function(){
-        console.log('GROW2!');
         $('#authSubmit').attr('class', 'grow2');
         $('#avatar, #avatarWelcome').removeClass('invisible');
         $('#avatar').animate({'opacity' : '1'}, 3000, function(){
@@ -241,6 +240,7 @@ $(document).ready(function(){
   );
 
   $('#facebook').click(shareFacebookContent);
+  $('#identCounter').click(triggerShareOverlay);
 });
 
 // Sample JSON Storage
@@ -480,8 +480,7 @@ function getIdent(email){
 }
 
 function identify(ident){
-  console.log(ident);
-
+  genURLS(ident);
   if(ident.fullContact && ident.fullContact.photos){
     var photo = ident.fullContact.photos[0].url;
     $('#avatar img, #identCounter img').attr('src', photo);
@@ -500,7 +499,6 @@ function identify(ident){
   $('#identCounter em').text(ident.notesCapacity);
 
   $('#authSubmit').attr('class', 'grow1').animate({'opacity' : '1'}, 2000, function(){
-    console.log('animation complete! Grow2 go!');
     $('#authSubmit').attr('class', 'grow2');
     $('#avatar, #avatarWelcome').removeClass('invisible');
     $('#avatar').animate({'opacity' : '1'}, 3000, function(){
@@ -562,12 +560,14 @@ function takeMeBack(){
 
 function formatTwitterLink(){
   var tweetText;
+  var base64 = referralStringBuilder(Lockr.get('ZenenotesIdent'), contentSelected, 'twitter');
+
   if(contentSelected === 'story'){
     tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: bit.ly/GrowthMachine');
   } else if(contentSelected === 'app'){
-    tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds Note Taking app in 24hrs for a job interview and turns it into a Growth Machine bit.ly/GrowthMachine');
+    tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds Note Taking app in 24hrs for a job interview and turns it into a Growth Machine ' + bitlyURLS.twitter.app);
   } else if(contentSelected === 'rick'){
-    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 grows a startup to 100M users in 14 days! https://www.zenenotes.com/100M-Users');
+    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 grows a startup to 100M users in 14 days! ' + bitlyURLS.twitter.rick);
   }
   var newLink = 'https://twitter.com/intent/tweet?text='+tweetText;
   $('#twitter a').attr('href', newLink);
@@ -582,9 +582,9 @@ function shareLinkedInContent() {
   if(contentSelected === 'story'){
     content = 'Read the Case Study: Growth Engineer takes job interview and turns it into a growth machine. https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052'
   } else if(contentSelected === 'app'){
-    content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. https://www.zenenotes.com'
+    content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. http://www.zenenotes.com'
   } else if(contentSelected === 'rick'){
-    content = 'Growth Engineer exposes how he grew a user base to 100M users in 14 days! https://www.zenenotes.com/100M-Users'
+    content = 'Growth Engineer exposes how he grew a user base to 100M users in 14 days! http://www.zenenotes.com/100M-Users/'
   }
 
   // Build the JSON payload containing the content to be shared
@@ -614,10 +614,10 @@ function shareFacebookContent(){
     href = 'https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052';
     quote = 'How I turned a Job Interview into a Growth Machine';
   } else if(contentSelected === 'app'){
-    href = 'https://www.zenenotes.com';
+    href = 'http://www.zenenotes.com';
     quote = 'A growth engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine.'
   } else if(contentSelected === 'rick'){
-    href = 'https://www.zenenotes.com/100M-Users';
+    href = 'http://www.zenenotes.com/100M-Users/';
     quote = 'Growth engineer exposes how he grew a user base to 100M users in 14 days!'
   }
 
@@ -718,7 +718,6 @@ function startTimer(duration, display) {
         display.text(minutes + ":" + seconds);
 
         if (--timer < 0) {
-            console.log('NEGATIVE TIME!')
             display.remove();
         }
     }, 1000);
@@ -730,4 +729,70 @@ function timerFire(selector, time){
   }
 
   startTimer(time, $(selector + ' .countdown'));
+}
+
+var bitlyURLS = {
+  'linkedin' : {
+    'app' : null,
+    'rick' : null,
+  },
+
+  'facebook' : {
+    'app' : null,
+    'rick' : null,
+  },
+
+  'twitter' : {
+    'app' : null,
+    'rick' : null,
+  }
+};
+
+function referralStringBuilder(ident, content, platform){
+  var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'"}';
+  var base64 = Base64.encode(json);
+  return base64;
+}
+
+function bitlyLink(fullURL, content, platform, assignee){
+  // Check if we've created a link or not:
+  var exists;
+
+  $.ajax({
+    method: 'GET',
+    url: 'https://api-ssl.bitly.com/v3/link/lookup',
+    data: {
+      access_token: '956b2258ad47e9b4a6790a51fbfb0145241c5fe1',
+      url: fullURL
+    }
+  }).done(function(response){
+    if(response.data.link_lookup[0].aggregate_link){
+      bitlyURLS[platform][content] = response.data.link_lookup[0].aggregate_link;
+      return response.data.link_lookup[0].aggregate_link;
+    } else {
+      console.log('--== NO URL ==-- AJAXING');
+      $.ajax({
+        method: 'GET',
+        url: 'https://api-ssl.bitly.com/v3/shorten',
+        data: {
+          "access_token" : '956b2258ad47e9b4a6790a51fbfb0145241c5fe1',
+          "longUrl" : fullURL
+        }
+      }).done(function(response){
+        bitlyURLS[platform][content] = response.data.url;
+        return response.data.url;
+      }).fail(function(response){
+        console.log('BITLY LINK GEN ERROR', response)
+      });
+    }
+  });
+}
+
+function genURLS(ident){
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'linkedin'), 'app', 'linkedin');
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'linkedin'), 'rick', 'linkedin')
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'twitter'), 'app', 'twitter')
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'twitter'), 'rick', 'twitter')
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'facebook'), 'app', 'facebook')
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'facebook'), 'rick', 'facebook')
 }
