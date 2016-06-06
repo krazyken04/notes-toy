@@ -35,10 +35,20 @@ $(document).ready(function(){
     referrer = referrer.replace(re, "");
     referrer = JSON.parse(referrer);
 
+    mixpanel.people.set_once({
+      'Originally Referred By' : referrer.email,
+      'Original Referrer Name' : referrer.firstName,
+      'Original Referrer Pic'  : referrer.pic,
+      'Original Referral Source' : referrer.platform,
+      'Original Referral Content' : referrer.content
+    });
+
     mixpanel.register({
       'Referrer' : referrer.email,
       'Referring Content' : referrer.content,
-      'Referring Source' : referrer.platform
+      'Referring Source' : referrer.platform,
+      'Referring Pic' : referrer.pic,
+      'Referrering Name' : referrer.firstName
     });
   }
 
@@ -47,6 +57,7 @@ $(document).ready(function(){
     $('a[href="/app/"]').attr('href', '/app/?r=' + params.r);
   }
 
+  console.log('--== MIXPANEL SANITY LOGGER: ' + 'Visit ' + window.location.pathname + ' ==--');
   mixpanel.track('Visit', {
     'Page' : window.location.pathname
   });

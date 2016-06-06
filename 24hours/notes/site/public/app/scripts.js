@@ -442,6 +442,8 @@ function editNote(note){
 
 var welcomeOpen = false;
 function getIdent(email){
+  mixpanel.identify(email);
+
   if(welcomeOpen){
     return false;
   }
@@ -461,6 +463,21 @@ function getIdent(email){
   .done(function(resp){
     console.log('ajax resp', resp);
     var ident = {'email' : email, 'fullContact' : resp, 'notesCapacity' : 2};
+
+    sl('getIdent() People Set_Once email, firstname, pic');
+    mixpanel.people.set_once({
+      "$email": ident.email,
+      "$first_name" : ident.fullContact.contactInfo.givenName,
+      "Pic" : ident.fullContact.photos[0].url
+    });
+
+    mixpanel.register({
+      "email": ident.email,
+      "first_name" : ident.fullContact.contactInfo.givenName,
+      "Pic" : ident.fullContact.photos[0].url
+    });
+
+
     Lockr.set('ZenenotesIdent', ident);
 
     identify(ident);
@@ -481,6 +498,23 @@ function getIdent(email){
 
 function identify(ident){
   genURLS(ident);
+
+  // In case they slipped by the other ident
+  sl('Identify() People Set_Once email, firstname, pic');
+  mixpanel.people.set_once({
+    "$email": ident.email,
+    "$first_name" : ident.fullContact.contactInfo.givenName,
+    "Pic" : ident.fullContact.photos[0].url
+  });
+
+  mixpanel.register({
+    "email": ident.email,
+    "first_name" : ident.fullContact.contactInfo.givenName,
+    "Pic" : ident.fullContact.photos[0].url
+  });
+
+  mixpanel.identify(email);
+
   if(ident.fullContact && ident.fullContact.photos){
     var photo = ident.fullContact.photos[0].url;
     $('#avatar img, #identCounter img').attr('src', photo);
@@ -560,7 +594,6 @@ function takeMeBack(){
 
 function formatTwitterLink(){
   var tweetText;
-  var base64 = referralStringBuilder(Lockr.get('ZenenotesIdent'), contentSelected, 'twitter');
 
   if(contentSelected === 'story'){
     tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: bit.ly/GrowthMachine');
@@ -752,8 +785,10 @@ var bitlyURLS = {
 
 // Builds out Base64 ?r= string
 function referralStringBuilder(ident, content, platform){
-  var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'"}';
+  var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'", "pic":"'+ident.fullContact.photos[0].url+'", "firstName" :"'+ident.fullContact.contactInfo.givenName+'" }';
+  console.log('JSON OBJECT WITH IDENT', json);
   var base64 = Base64.encode(json);
+  console.log('BASE64', base64);
   return base64;
 }
 
@@ -761,7 +796,7 @@ function referralStringBuilder(ident, content, platform){
 function bitlyLink(fullURL, content, platform){
   // Check if we've created a link or not:
   var exists;
-
+  console.log('FULL URL BITLY: ', fullURL);
   $.ajax({
     method: 'GET',
     url: 'https://api-ssl.bitly.com/v3/link/lookup',
@@ -770,6 +805,7 @@ function bitlyLink(fullURL, content, platform){
       url: fullURL
     }
   }).done(function(response){
+    console.log('--== BITLY EXISTING RESPONSE ==--', response);
     if(response.data.link_lookup[0].aggregate_link){
       bitlyURLS[platform][content] = response.data.link_lookup[0].aggregate_link;
       return response.data.link_lookup[0].aggregate_link;
@@ -783,6 +819,7 @@ function bitlyLink(fullURL, content, platform){
           "longUrl" : fullURL
         }
       }).done(function(response){
+        console.log('--== BITLY NEW RESPONSE ==--', response);
         bitlyURLS[platform][content] = response.data.url;
         return response.data.url;
       }).fail(function(response){
@@ -793,10 +830,10 @@ function bitlyLink(fullURL, content, platform){
 }
 
 function genURLS(ident){
-  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'linkedin'), 'app', 'linkedin');
-  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'linkedin'), 'rick', 'linkedin')
-  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'twitter'), 'app', 'twitter')
-  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'twitter'), 'rick', 'twitter')
-  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'facebook'), 'app', 'facebook')
-  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'facebook'), 'rick', 'facebook')
+  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'linkedin'), 'app', 'linkedin');
+  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'linkedin'), 'rick', 'linkedin')
+  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'twitter'), 'app', 'twitter')
+  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'twitter'), 'rick', 'twitter')
+  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'facebook'), 'app', 'facebook')
+  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'facebook'), 'rick', 'facebook')
 }
