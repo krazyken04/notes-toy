@@ -582,9 +582,9 @@ function shareLinkedInContent() {
   if(contentSelected === 'story'){
     content = 'Read the Case Study: Growth Engineer takes job interview and turns it into a growth machine. https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052'
   } else if(contentSelected === 'app'){
-    content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. http://www.zenenotes.com'
+    content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. ' + bitlyURLS.linkedin.app
   } else if(contentSelected === 'rick'){
-    content = 'Growth Engineer exposes how he grew a user base to 100M users in 14 days! http://www.zenenotes.com/100M-Users/'
+    content = 'Growth Engineer exposes how he grew a user base to 100M users in 14 days! ' + bitlyURLS.linkedin.rick
   }
 
   // Build the JSON payload containing the content to be shared
@@ -614,10 +614,10 @@ function shareFacebookContent(){
     href = 'https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052';
     quote = 'How I turned a Job Interview into a Growth Machine';
   } else if(contentSelected === 'app'){
-    href = 'http://www.zenenotes.com';
+    href = bitlyURLS.facebook.app;
     quote = 'A growth engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine.'
   } else if(contentSelected === 'rick'){
-    href = 'http://www.zenenotes.com/100M-Users/';
+    href = bitlyURLS.facebook.rick;
     quote = 'Growth engineer exposes how he grew a user base to 100M users in 14 days!'
   }
 
@@ -731,6 +731,8 @@ function timerFire(selector, time){
   startTimer(time, $(selector + ' .countdown'));
 }
 
+
+// This is all mostly because I hate dealing with Promises when it's late at night >_<
 var bitlyURLS = {
   'linkedin' : {
     'app' : null,
@@ -748,13 +750,15 @@ var bitlyURLS = {
   }
 };
 
+// Builds out Base64 ?r= string
 function referralStringBuilder(ident, content, platform){
   var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'"}';
   var base64 = Base64.encode(json);
   return base64;
 }
 
-function bitlyLink(fullURL, content, platform, assignee){
+// Grabs url with Base64 string, asks Bitly if we've created this link before, and if not creates it, then assigns it to the right spot.
+function bitlyLink(fullURL, content, platform){
   // Check if we've created a link or not:
   var exists;
 
