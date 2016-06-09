@@ -713,6 +713,7 @@ function shareFacebookContent(){
   FB.ui({
     method: 'share',
     href: href,
+    picture: 'http://www.zenenotes.com/images/facebookShare.png',
     hashtag: '#GrowthEngineering',
     quote: quote
   }, function(response){
