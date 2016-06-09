@@ -125,10 +125,12 @@ $(document).ready(function(){
 
   $('#saveNote').click(function(){
     save(false);
+    mixpanel.track('Note', {'type' : 'Note'})
   });
 
   $('#saveList').click(function(){
     save(true);
+    mixpanel.track('Note', {'type' : 'List'});
   });
 
   // Editing
@@ -174,13 +176,21 @@ $(document).ready(function(){
   });
 
   $('#app').click(function(){
-    if(!Lockr.get('ZenenotesIdent').appShared){
+    var last = Lockr.get('ZenenotesIdent').lastAppShared;
+    var lastTimer = moment(last).add(20, 'minutes');
+    var timeLeft = lastTimer.diff(moment(), 'minutes');
+
+    if(last && timeLeft <= 0 || !last){
       onContentSelected('app');
     }
   });
 
   $('#rick').click(function(){
-    if(!Lockr.get('ZenenotesIdent').rickShared){
+    var last = Lockr.get('ZenenotesIdent').lastRickShared;
+    var lastTimer = moment(last).add(20, 'minutes');
+    var timeLeft = lastTimer.diff(moment(), 'minutes');
+
+    if(last && timeLeft <= 0 || !last){
       onContentSelected('rick');
     } else {
       prompt1PerDay();
@@ -232,6 +242,13 @@ $(document).ready(function(){
           if(!$('#twitter').hasClass('done')){
             successfulShare();
           }
+
+          // Track shares no matter what
+          mixpanel.track('Content Shared', {
+            'Content' : contentSelected,
+            'Platform' : 'twitter'
+          });
+
           $('#twitter').addClass('done');
         }
       );
@@ -442,7 +459,11 @@ function editNote(note){
 
 var welcomeOpen = false;
 function getIdent(email){
-  mixpanel.identify(email);
+  if(params.m){
+    mixpanel.alias(email);
+  } else {
+    mixpanel.identify(email);
+  }
 
   if(welcomeOpen){
     return false;
@@ -464,18 +485,32 @@ function getIdent(email){
     console.log('ajax resp', resp);
     var ident = {'email' : email, 'fullContact' : resp, 'notesCapacity' : 2};
 
-    sl('getIdent() People Set_Once email, firstname, pic');
-    mixpanel.people.set_once({
-      "$email": ident.email,
-      "$first_name" : ident.fullContact.contactInfo.givenName,
-      "Pic" : ident.fullContact.photos[0].url
-    });
+    if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName && ident.fullContact.photos){
+      mixpanel.people.set_once({
+        "$email": ident.email,
+        "$first_name" : ident.fullContact.contactInfo.givenName,
+        "Pic" : ident.fullContact.photos[0].url
+      });
 
-    mixpanel.register({
-      "email": ident.email,
-      "first_name" : ident.fullContact.contactInfo.givenName,
-      "Pic" : ident.fullContact.photos[0].url
-    });
+      mixpanel.register({
+        "email": ident.email,
+        "first_name" : ident.fullContact.contactInfo.givenName,
+        "Pic" : ident.fullContact.photos[0].url
+      });
+
+      mixpanel.track('Conversion');
+    } else {
+      mixpanel.people.set_once({
+        "$email": ident.email,
+      });
+
+      mixpanel.register({
+        "email": ident.email,
+      });
+
+      mixpanel.track('Conversion');
+    }
+
 
 
     Lockr.set('ZenenotesIdent', ident);
@@ -498,22 +533,34 @@ function getIdent(email){
 
 function identify(ident){
   genURLS(ident);
-
   // In case they slipped by the other ident
-  sl('Identify() People Set_Once email, firstname, pic');
-  mixpanel.people.set_once({
-    "$email": ident.email,
-    "$first_name" : ident.fullContact.contactInfo.givenName,
-    "Pic" : ident.fullContact.photos[0].url
-  });
+  if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName && ident.fullContact.photos){
+    mixpanel.people.set_once({
+      "$email": ident.email,
+      "$first_name" : ident.fullContact.contactInfo.givenName,
+      "Pic" : ident.fullContact.photos[0].url
+    });
 
-  mixpanel.register({
-    "email": ident.email,
-    "first_name" : ident.fullContact.contactInfo.givenName,
-    "Pic" : ident.fullContact.photos[0].url
-  });
+    mixpanel.register({
+      "email": ident.email,
+      "first_name" : ident.fullContact.contactInfo.givenName,
+      "Pic" : ident.fullContact.photos[0].url
+    });
+  } else {
+    mixpanel.people.set_once({
+      "$email": ident.email,
+    });
 
-  mixpanel.identify(email);
+    mixpanel.register({
+      "email": ident.email,
+    });
+  }
+
+  if(params.m){
+    mixpanel.alias(ident.email);
+  } else {
+    mixpanel.identify(ident.email);
+  }
 
   if(ident.fullContact && ident.fullContact.photos){
     var photo = ident.fullContact.photos[0].url;
@@ -539,6 +586,8 @@ function identify(ident){
       $('#auth').addClass('takeOff').fadeOut('slow');
     });
   });
+
+  mixpanel.track('Login');
 }
 
 function throwAuthError(string){
@@ -570,6 +619,7 @@ function countNotesAndGrow(overlayTriggerable){
 }
 
 function triggerShareOverlay(){
+  mixpanel.track('Share Screen');
   console.log('trigger growth');
   $('#sharePrompt').addClass('visible')
 }
@@ -596,7 +646,7 @@ function formatTwitterLink(){
   var tweetText;
 
   if(contentSelected === 'story'){
-    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: bit.ly/GrowthMachine');
+    tweetText = encodeURIComponent('#GrowthEngineer @KenHanson04 Takes a job interview and turns it into a Growth Machine: ' + bitlyURLS.twitter.story);
   } else if(contentSelected === 'app'){
     tweetText =encodeURIComponent('#GrowthEngineer @KenHanson04 builds Note Taking app in 24hrs for a job interview and turns it into a Growth Machine ' + bitlyURLS.twitter.app);
   } else if(contentSelected === 'rick'){
@@ -613,7 +663,7 @@ function onLinkedInAuth(){
 function shareLinkedInContent() {
   var content;
   if(contentSelected === 'story'){
-    content = 'Read the Case Study: Growth Engineer takes job interview and turns it into a growth machine. https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052'
+    content = 'Read the Case Study: Growth Engineer takes job interview and turns it into a growth machine. ' + bitlyURLS.linkedin.story
   } else if(contentSelected === 'app'){
     content = 'A Growth Engineer builds a Note Taking app in 24 hours for an engineering challenge, but turns it into a growth machine. ' + bitlyURLS.linkedin.app
   } else if(contentSelected === 'rick'){
@@ -635,6 +685,12 @@ function shareLinkedInContent() {
       if(!$('#linkedin').hasClass('done')){
         successfulShare();
       }
+
+      mixpanel.track('Content Shared', {
+        'Content' : contentSelected,
+        'Platform' : 'linkedin'
+      });
+
       $('#linkedin').addClass('done');
     });
 }
@@ -644,7 +700,7 @@ function shareFacebookContent(){
       quote;
 
   if(contentSelected === 'story'){
-    href = 'https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052';
+    href = bitlyURLS.facebook.story;
     quote = 'How I turned a Job Interview into a Growth Machine';
   } else if(contentSelected === 'app'){
     href = bitlyURLS.facebook.app;
@@ -664,14 +720,23 @@ function shareFacebookContent(){
       if(!$('#facebook').hasClass('done')){
         successfulShare();
       }
+
+      mixpanel.track('Content Shared', {
+        'Content' : contentSelected,
+        'Platform' : 'facebook'
+      });
+
       $('#facebook').addClass('done');
     }
   });
 }
 
+var coins = new Audio('../sounds/notesEarned.mp3');
+
 function successfulShare(){
   console.log('AWARD POINTS!');
-
+  coins.volume = 0.3;
+  coins.play();
 
 
   var ident = Lockr.get('ZenenotesIdent');
@@ -691,6 +756,7 @@ function successfulShare(){
   }
 
   Lockr.set('ZenenotesIdent', ident);
+
   console.log(Lockr.get('ZenenotesIdent'));
   wireUpTimers(Lockr.get('ZenenotesIdent'));
   countNotesAndGrow(false);
@@ -770,22 +836,29 @@ var bitlyURLS = {
   'linkedin' : {
     'app' : null,
     'rick' : null,
+    'story' : null,
   },
 
   'facebook' : {
     'app' : null,
     'rick' : null,
+    'story' : null,
   },
 
   'twitter' : {
     'app' : null,
     'rick' : null,
+    'story' : null,
   }
 };
 
 // Builds out Base64 ?r= string
 function referralStringBuilder(ident, content, platform){
-  var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'", "pic":"'+ident.fullContact.photos[0].url+'", "firstName" :"'+ident.fullContact.contactInfo.givenName+'" }';
+  if(ident.fullContact && ident.fullContact.contactInfo && ident.fullContact.contactInfo.givenName && ident.fullContact.photos){
+    var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'", "pic":"'+ident.fullContact.photos[0].url+'", "firstName" :"'+ident.fullContact.contactInfo.givenName+'" }';
+  } else {
+    var json = '{"email":"'+ident.email+'","content":"'+content+'","platform":"'+platform+'" }';
+  }
   console.log('JSON OBJECT WITH IDENT', json);
   var base64 = Base64.encode(json);
   console.log('BASE64', base64);
@@ -830,10 +903,15 @@ function bitlyLink(fullURL, content, platform){
 }
 
 function genURLS(ident){
-  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'linkedin'), 'app', 'linkedin');
-  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'linkedin'), 'rick', 'linkedin')
-  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'twitter'), 'app', 'twitter')
-  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'twitter'), 'rick', 'twitter')
-  // bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'facebook'), 'app', 'facebook')
-  // bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'facebook'), 'rick', 'facebook')
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'linkedin'), 'app', 'linkedin');
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'linkedin'), 'rick', 'linkedin')
+  bitlyLink('http://www.zenenotes.com/story/?r=' + referralStringBuilder(ident, 'story', 'linkedin'), 'story', 'linkedin')
+
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'twitter'), 'app', 'twitter')
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'twitter'), 'rick', 'twitter')
+  bitlyLink('http://www.zenenotes.com/story/?r=' + referralStringBuilder(ident, 'story', 'twitter'), 'story', 'twitter')
+
+  bitlyLink('http://www.zenenotes.com/?r=' + referralStringBuilder(ident, 'app', 'facebook'), 'app', 'facebook')
+  bitlyLink('http://www.zenenotes.com/100M-Users/?r=' + referralStringBuilder(ident, 'rick', 'facebook'), 'rick', 'facebook')
+  bitlyLink('http://www.zenenotes.com/story/?r=' + referralStringBuilder(ident, 'story', 'facebook'), 'story', 'facebook')
 }

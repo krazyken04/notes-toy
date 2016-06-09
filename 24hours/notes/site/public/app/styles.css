@@ -259,7 +259,7 @@ a {color: #232323;}
 
   #identCounter img { width: 30px; height: 30px; display: inline-block; border-radius: 30px; margin-top: 7px; float: right;}
 
-#sharePrompt { position: fixed; height: 100%; width: 100%; z-index: 99999; background: #ff7033; color: #fff; padding-top: 45px; margin-top: -45px; text-align: center; font-family: 'Helvetica'; display: flex; flex-direction: column; justify-content: center; transition: all 1s; transform: translate(0, -100%);}
+#sharePrompt { position: fixed; height: 100%; width: 100%; z-index: 99999; background: #ff7033; color: #fff; padding-top: 45px; margin-top: -45px; text-align: center; font-family: 'Helvetica'; display: flex; flex-direction: column; justify-content: center; transition: all 1s; transform: translate(0, -200%);}
 #sharePrompt.visible {transform: translate(0,0);}
   #message { margin-top: -10vh; }
     #message h1 { font-size: 45px; line-height: 85px; font-weight: 100; margin: 0 auto; margin-bottom: 28px; width: 672px; text-align: left;}
@@ -289,3 +289,58 @@ a {color: #232323;}
 
         #chooseContent a { color: #333; }
           #chooseContent .countdown {position: absolute; top: 2px; left: 15px; background: rgba(0,0,0,0.5); line-height: 118px; font-size: 50px; display: block; width: 194px; height: 118px; border-radius: 4px;}
+
+
+@media  only screen and (max-width : 480px),
+        only screen and (max-width : 320px),
+        only screen and (max-width : 568px) {
+  #notification.show {
+    transform: translate(0,0) scale(0.85) !important;
+    transform-origin: bottom right;
+  }
+
+  #avatarWelcome { font-size: 28px; }
+  #avatar {transform: scale(0.7); transform-origin: bottom center;}
+  #avatarWelcome span {width: 100%;}
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 568px) and (min-width : 320px){
+  #identCounter {right: 0px;}
+    #identCounter img {display: none;}
+  #contentList ul, #platformList ul, #message h1, #message p { width: 100%; text-align: center;}
+    #message h1 { line-height: 49px; font-size: 7vh;}
+    #message p { font-size: 3vh; }
+      #message p strong {margin-bottom: 9px;}
+      #message h1 strong {display: block;}
+    #contentList ul, #platformList ul { margin-bottom: 10px; margin-top: 0px;}
+
+    #contentList ul li, #platformList ul li {
+      margin: 0 auto;
+      float: none;
+    }
+
+    #nothanks { margin: 0 15px; }
+    body {background-size: contain;}
+}
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width : 320px) {
+  #identCounter {right: 0px;}
+    #identCounter img {display: none;}
+    #identCounter strong.label { font-size: 2vh; }
+  #sharePrompt {padding-top: 25px;}
+  #contentList ul, #platformList ul, #message h1, #message p { width: 100%; text-align: center;}
+    #message h1 { display: none;}
+    #message p { font-size: 3vh; }
+      #message p strong {margin-bottom: 9px;}
+      #message h1 strong {display: block;}
+    #contentList ul, #platformList ul { margin-bottom: 10px; margin-top: 0px;}
+
+    #contentList ul li, #platformList ul li {
+      margin: 0 auto;
+      float: none;
+    }
+
+    #nothanks { margin: 0 15px; }
+}

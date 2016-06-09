@@ -50,11 +50,29 @@ $(document).ready(function(){
       'Referring Pic' : referrer.pic,
       'Referrering Name' : referrer.firstName
     });
+
+    // Medium forwarding
+    if(window.location.pathname == '/story/' || window.location.pathname == '/Story/'){
+      console.log('MEDIUM FORWARDING')
+      window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
+    }
+
+  } else if(window.location.pathname == '/story/' || window.location.pathname == '/Story/') {
+    console.log('We are on Story, but no referrer. Push them on');
+    window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
   }
 
   // If we're on the app landing, pass along the referrer
-  if(window.location.pathname === '/' && params.r !== undefined){
-    $('a[href="/app/"]').attr('href', '/app/?r=' + params.r);
+  if(window.location.pathname === '/' && params.r !== undefined || window.location.pathname === '/100M-Users/' && params.r !== undefined || window.location.pathname === '/app/' && params.r !== undefined){
+    $('a').not('.page-scroll').each(function(i, a){
+      var href = $(a).attr('href');
+      $(a).attr('href', href + '?r=' + params.r);
+    });
+  } else if(window.location.pathname === '/' && params.m){ // Came from medium
+    $('a').not('.page-scroll').each(function(i, a){
+      var href = $(a).attr('href');
+      $(a).attr('href', href + '?m=' + params.m);
+    });
   }
 
   console.log('--== MIXPANEL SANITY LOGGER: ' + 'Visit ' + window.location.pathname + ' ==--');

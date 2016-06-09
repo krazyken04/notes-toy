@@ -7,40 +7,30 @@ $(window).load(function(){
 jQuery(document).ready(function ($) {
     'use strict';
 
-    //jQuery for page scrolling feature - requires jQuery Easing plugin
-    $('.page-scroll').on('click', function (event) {
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-            scrollTop: $($anchor.attr('href')).offset().top
-        }, 1500, 'easeInOutExpo');
-        event.preventDefault();
-    });
-
-
     // collapsed menu close on click
     $(document).on('click', '.navbar-collapse.in', function (e) {
         if ($(e.target).is('a')) {
             $(this).collapse('hide');
         }
     });
-    
+
     // add white background to nav with scrolling
     if ($(window).scrollTop() > 50) {
         $(".sticky-navigation").addClass("NavBg");
     }
     else {
         $(".sticky-navigation").removeClass("NavBg");
-    }  
-    $(window).scroll(function(){                
+    }
+    $(window).scroll(function(){
         if ($(window).scrollTop() > 50) {
             $(".sticky-navigation").addClass("NavBg");
         }
         else {
             $(".sticky-navigation").removeClass("NavBg");
-        }  
+        }
     });
-     
-    // screenshots carousel 
+
+    // screenshots carousel
     jQuery(function() {
 
         jQuery('#allinone_carousel_sweet').allinone_carousel({
@@ -64,9 +54,9 @@ jQuery(document).ready(function ($) {
             behindCircleColor:"#999999",
             nextPrevMarginTop:25,
             bottomNavMarginBottom:-50
-        });		
-			
-			
+        });
+
+
     });
 
     // input , text area placeholder on browsers
@@ -98,7 +88,7 @@ if ($('.mailchimp').length>0) {
         url: "//mixdesigns.us4.list-manage.com/subscribe/post?u=d21d287a2a3620961a7419c49&amp;id=a4d425b5b6" //Replace this with your own mailchimp post URL. Don't remove the "". Just paste the url inside "".
     });
 }
-    
+
 function mailchimpCallback(resp) {
     if (resp.result === 'success') {
         $('.subscription-success').html('<i class="fa fa-check"></i><br/>' + resp.msg).fadeIn(1000);
