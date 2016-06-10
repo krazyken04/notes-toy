@@ -16,8 +16,6 @@ Please provide your program as a zip or tar archive, with an index.html file. Us
 
 Once complete, you can submit your finished assignment to the link provided at the bottom of this email. Or, if you have any problems with uploading, please feel free to email me directly. Thank you!
 
-Please submit here: http://app.greenhouse.io/tests/2f6bbcb57bc46cd34a5304ccf6adaf0f
-
 # Notes about my efforts
 This entire document was written before beginning work. I will use a github repo if you'd be interested in the changes over time.
 I'm big on light and fast as often as possible. I can typically go faster by skipping NPM / RequireJS and SASS types of frameworks.
