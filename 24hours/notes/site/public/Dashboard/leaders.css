@@ -1,0 +1,36 @@
+.leaderCardWrapper {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: solid 1px #eee;
+}
+  .leaderCardWrapper .header { background: #667b9a; border-bottom: solid 1px #333; color: #fff; position: relative; overflow: hidden; min-height: 120px; border-top-right-radius: 8px; border-top-left-radius: 8px;}
+    .header img { position: absolute; display: block; width: 100%; height: auto; top: 0px; left: 0px; z-index: 1;}
+    .header img::before {
+      content: '';
+      position: absolute;
+      display: block;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+
+      z-index: 2;
+    }
+
+    .header h3 {position: relative; z-index: 3; line-height: 120px; font-size: 45px; width: 100%; height: 100%; background: rgba(102,123,154,0.8); margin: 0px; }
+
+    .leaderCardWrapper h5 {font-size: 16px !important; }
+
+    .leaderCardWrapper .header + .content {
+      padding: 20px;
+      border: solid 1px #667b9a;
+      background: #e0e4eb;
+      border-top: none;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .leaderCardWrapper .count, .leaderCardWrapper .content, .leaderCardWrapper .platform { font-size: 24px; font-weight: bold; }
+      .leaderCardWrapper .count small, .leaderCardWrapper .content small, .leaderCardWrapper .platform small { font-size: 14px; font-weight: 100; display: block }
+

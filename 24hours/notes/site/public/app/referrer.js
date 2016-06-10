@@ -51,15 +51,20 @@ $(document).ready(function(){
       'Referrering Name' : referrer.firstName
     });
 
-    // Medium forwarding
-    if(window.location.pathname == '/story/' || window.location.pathname == '/Story/'){
-      console.log('MEDIUM FORWARDING')
-      window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
-    }
+    window.setTimeout(function(){
+      // Medium forwarding
+      if(window.location.pathname == '/story/' || window.location.pathname == '/Story/'){
+        console.log('MEDIUM FORWARDING')
+        window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
+      }
+    }, 1000);
 
   } else if(window.location.pathname == '/story/' || window.location.pathname == '/Story/') {
-    console.log('We are on Story, but no referrer. Push them on');
-    window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
+    window.setTimeout(function(){
+      console.log('We are on Story, but no referrer. Push them on');
+      console.log('MEDIUM FORWARDING');
+      window.location = "https://medium.com/@kenhanson04/how-i-took-an-engineering-test-turned-it-into-a-growth-machine-6834845bd052";
+    }, 1000)
   }
 
   // If we're on the app landing, pass along the referrer

@@ -282,7 +282,7 @@ $(document).ready(function(){
 */
 
 function save(list){
-
+  $('#noteInput textarea, #listInput li.focused input').css({'background' : 'transparent'});
   // Can we even save?
   var canSave;
   if(list && countNotesAndGrow(false)){
@@ -302,6 +302,7 @@ function save(list){
   }
 
   if(!canSave){
+    $('.open.list li.focused input, .open.note textarea').css({'background' : '#f2dede'});
     return false;
   }
 

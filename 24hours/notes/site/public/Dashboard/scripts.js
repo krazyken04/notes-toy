@@ -19,22 +19,20 @@ function renderCharts(){
   // {Series: {time : value, time: value}}
 
   // ---==== SHARE HEALTH CHART ====---
-  MP.api.funnel('Conversion', 'Content Shared', {
+  MP.api.funnel('Login', 'Content Shared', {
     from: dateSelector.val().from,
     to: dateSelector.val().to,
     length: 14
   }, function(results){
-    console.log('--Conversion Rates for Sharing--',results);
     var conv_ratio = { 'Share Conversion Rate' : null};
 
     var keysOut = _.pairs(results[1]);
     var CRObjs = {};
     _.each(keysOut, function(day){
-      CRObjs[day[0]] = day[1].overall_conv_ratio * 100;
+      CRObjs[day[0]] = day[1].overall_conv_ratio;
     });
 
     conv_ratio["Share Conversion Rate"] = CRObjs;
-    console.log(conv_ratio);
 
     $('#funnelReport').css({'width' : $('#funnelReport').parent().width() - 12})
     var funnelReportChart = $('#funnelReport').MPChart({chartType: 'line'});
@@ -206,8 +204,6 @@ function renderCharts(){
   "}";
 
   MP.api.jql(notesJQL).done(function(results){
-    console.log('-- NOTES --',results);
-
     /* {
         'Notes' : { time : 2, time: 1, },
         'Lists' : { time: 4, time: 1 }
@@ -231,8 +227,29 @@ function renderCharts(){
     createChart('#usageNotesPerDay', notesData, 'line');
   });
 
+   // ---==== LEADERBOARD ====---
 
+   // Get Leaders
+   var leaderListJQL = "function main() {"+
+    "return Events({"+
+      "from_date: '"+moment(dateSelector.val().from).format('YYYY-MM-DD')+"',"+
+      "to_date:   '"+moment(dateSelector.val().to).format('YYYY-MM-DD')+"',"+
+      "event_selectors: [{'event' : 'Conversion'}]"+
+    "})"+
+    ".groupBy(['properties.Referrer'], mixpanel.reducer.count())"+
+    ".map(function(ref){"+
+      "if(ref.key[0] === null){"+
+        "return {'user' : null, 'value' : 0}"+
+      "} else {"+
+        "return {'user' : ref.key[0], 'value' : ref.value}"+
+      "}"+
+    "}).reduce(mixpanel.reducer.top(3));"+
+  "}";
 
+  MP.api.jql(leaderListJQL).done(function(results){
+    leaderListDOM(results[0]);
+    fetchLeaderProfiles(results[0]);
+  });
 }
 
 function capitalizeFirstLetter(string) {
@@ -251,7 +268,6 @@ function usageDataManipulation(results, label){
       temporaryObject[label][momentDay] = day.value;
     }
   });
-  console.log(temporaryObject);
   return temporaryObject;
 }
 
@@ -299,6 +315,187 @@ function shareHealthDataManipulation(result){
   });
 
   return {'series' : sortedData, 'colors' : colors};
+}
+
+function leaderListDOM(leaderArray){
+  _.each(leaderArray, function(leader){
+    var str= leader.user;
+    var nameMatch = str.match(/^([^@]*)@/);
+    var name = nameMatch ? nameMatch[1] : null;
+
+    var card = '<div class="col-sm-12 col-md-4 text-center">'+
+      '<div class="leaderCardWrapper" id="'+name+'">'+
+      '</div>'+
+    '</div>';
+
+    $('#leaderBoard > .row').append(card);
+  });
+}
+
+function fetchLeaderProfiles(leaderArray){
+  console.log('--=== LEADERS ===---', leaderArray);
+
+  _.each(leaderArray, function(leader, i){
+    console.log('------ SEARCHING -----', leader.user);
+    var lookupJQL = "function main() {"+
+      "return People().filter(function(person){"+
+        "if(person.properties.$email == '"+leader.user+"'){"+
+          "return person;"+
+        "}"+
+      "}).map(function(user){"+
+        "var str= user.properties.$email;"+
+        "var nameMatch = str.match(/^([^@]*)@/);"+
+        "var name = nameMatch ? nameMatch[1] : null;"+
+        "return {'Pic' : user.properties.Pic, 'Name' : user.properties.$first_name, 'EmailUserName' : name}"+
+      "})"+
+    "}";
+
+    var bestShareConversionsJQL = "function main() {"+
+      "return Events({"+
+        "from_date: '"+moment(dateSelector.val().from).format('YYYY-MM-DD')+"',"+
+        "to_date:   '"+moment(dateSelector.val().to).format('YYYY-MM-DD')+"',"+
+        "event_selectors: [{event: 'Conversion'}]"+
+      "}).filter(function(ev){"+
+        "if(ev.properties['Referrer'] == '"+leader.user+"'){"+
+          "return ev;"+
+        "}"+
+      "}).groupBy(['properties.Referring Content','properties.Referring Source'], mixpanel.reducer.count())"+
+      ".reduce(mixpanel.reducer.top(1));"+
+    "}";
+
+    var bestShareClickthroughsJQL = "function main() {"+
+      "return Events({"+
+        "from_date: '"+moment(dateSelector.val().from).format('YYYY-MM-DD')+"',"+
+        "to_date:   '"+moment(dateSelector.val().to).format('YYYY-MM-DD')+"',"+
+        "event_selectors: [{event: 'Visit'}]"+
+      "}).filter(function(ev){"+
+        "if(ev.properties['Referrer'] == '"+leader.user+"'){"+
+          "return ev;"+
+        "}"+
+      "}).groupBy(['properties.Referring Content','properties.Referring Source'], mixpanel.reducer.count())"+
+      ".reduce(mixpanel.reducer.top(1));"+
+    "}";
+
+    var totalClickthroughsJQL = "function main() {"+
+      "return Events({"+
+      "from_date: '"+moment(dateSelector.val().from).format('YYYY-MM-DD')+"',"+
+      "to_date:   '"+moment(dateSelector.val().to).format('YYYY-MM-DD')+"',"+
+        "event_selectors: [{event: 'Visit'}]"+
+      "}).filter(function(ev){"+
+        "if(ev.properties['Referrer'] == '"+leader.user+"'){"+
+          "return ev;"+
+        "}"+
+      "})"+
+      ".reduce(mixpanel.reducer.count());"+
+    "}";
+
+    var totalConversionsJQL = "function main() {"+
+      "return Events({"+
+      "from_date: '"+moment(dateSelector.val().from).format('YYYY-MM-DD')+"',"+
+      "to_date:   '"+moment(dateSelector.val().to).format('YYYY-MM-DD')+"',"+
+        "event_selectors: [{event: 'Conversion'}]"+
+      "}).filter(function(ev){"+
+        "if(ev.properties['Referrer'] == '"+leader.user+"'){"+
+          "return ev;"+
+        "}"+
+      "})"+
+      ".reduce(mixpanel.reducer.count());"+
+    "}";
+
+    var leaderInfo,
+        bestShareConversions,
+        bestShareClickthroughs,
+        totalClickthroughs,
+        totalConversions;
+
+    MP.api.jql(lookupJQL).done(function(results){
+      // console.log('--- Leader Info ---', results);
+      leaderInfo = results;
+    }).then(function(){
+      MP.api.jql(bestShareConversionsJQL).done(function(results){
+        // console.log('--- Share Conversions ---', results[0]);
+        bestShareConversions = results[0];
+      }).then(function(){
+        MP.api.jql(bestShareClickthroughsJQL).done(function(results){
+          // console.log('--- Share Clickthroughs ---', results[0])
+          bestShareClickthroughs = results[0];
+        }).then(function(){
+          MP.api.jql(totalClickthroughsJQL).done(function(results){
+            totalClickthroughs = results[0];
+          }).then(function(){
+            MP.api.jql(totalConversionsJQL).done(function(results){
+              totalConversions = results[0];
+            }).then(function(){
+              console.log('---===  MASTER BUILD OBJECTS ===---', leader.user);
+              console.log(leaderInfo, bestShareConversions, bestShareClickthroughs, totalConversions, totalClickthroughs);
+              var $newLeaderCard = $('#' + leaderInfo[0].EmailUserName);
+              individualLeaderDOM($newLeaderCard, leaderInfo, bestShareConversions, bestShareClickthroughs, totalConversions, totalClickthroughs);
+            });
+          })
+        });
+      });
+    })
+  });
+}
+
+function individualLeaderDOM($domEl, leaderInfo, bestShareConversions, bestShareClickthroughs, totalConversions, totalClickthroughs){
+  if(!leaderInfo[0].Pic){
+    leaderInfo[0].Pic = 'transparent.png';
+  }
+
+  if(!leaderInfo[0].Name){
+    leaderInfo[0].Name = leaderInfo[0].EmailUserName;
+  }
+
+  var leaderHTML =  '<div class="header">'+
+      '<img src="'+leaderInfo[0].Pic+'" />'+
+      '<h3>'+leaderInfo[0].Name+'</h3>'+
+  '</div>'+
+  '<div class="content">'+
+      '<div class="row">'+
+          '<div class="col-sm-12">'+
+              '<div class="panel panel-default">'+
+                '<div class="panel-heading"><h5><em class="glyphicon glyphicon-user"></em> Top Converting Share</h5></div>'+
+                '<div class="panel-body">'+
+                  '<div class="count col-sm-4">'+bestShareConversions[0].value+'<small>Conversions</small></div>'+
+                  '<div class="platform col-sm-4"><i class="fa fa-'+bestShareConversions[0].key[1]+'-square"></i><small>Platform</small></div>'+
+                  '<div class="content col-sm-4"><i class="'+iconTranslatorClass(bestShareConversions[0].key[0])+'"></i><small>'+bestShareConversions[0].key[0]+'</small></div>'+
+                '</div>'+
+              '</div>'+
+          '</div>'+
+          '<div class="col-sm-12">'+
+              '<div class="panel panel-default">'+
+                '<div class="panel-heading"><h5><i class="fa fa-bullhorn"></i> Top Traffic Generating Share</h5></div>'+
+                '<div class="panel-body">'+
+                  '<div class="count col-sm-4">'+bestShareClickthroughs[0].value+' <small>Clickthroughs</small></div>'+
+                  '<div class="platform col-sm-4"><i class="fa fa-'+bestShareClickthroughs[0].key[1]+'-square"></i><small>Platform</small></div>'+
+                  '<div class="content col-sm-4"><i class="'+iconTranslatorClass(bestShareClickthroughs[0].key[0])+'"></i><small>'+bestShareClickthroughs[0].key[0]+'</small></div>'+
+                '</div>'+
+              '</div>'+
+          '</div>'+
+          '<div class="col-sm-12">'+
+              '<div class="panel panel-default">'+
+                '<div class="panel-heading"><h5><i class="fa fa-calculator"></i> Totals</h5></div>'+
+                '<div class="panel-body">'+
+                  '<div class="platform col-sm-6">'+totalConversions+' <small>Conversions</small></div>'+
+                  '<div class="content col-sm-6">'+totalClickthroughs+' <small>Clickthroughs</small></div>'+
+                '</div>'+
+              '</div>'+
+          '</div>'+
+      '</div>'+
+  '</div>';
+
+  $domEl.append(leaderHTML);
+}
+
+function iconTranslatorClass(contentShared){
+  if(contentShared === 'story'){
+    return 'fa fa-medium'
+  } else if(contentShared === 'app'){
+    return 'fa fa-sticky-note'
+  } else if(contentShared === 'rick'){
+    return 'fa fa-smile-o'
+  }
 }
 
 MP.api.setCredentials('26c54b67a8910fcafe97e528e535d5db');
